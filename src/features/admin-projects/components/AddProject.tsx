@@ -1,21 +1,40 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { useAddProject } from "../hooks/useAddProject";
+import { useEditProject } from "../hooks/useEditProject";
 import SelectField from "./SelectField";
 import InputField from "./InputField";
 import TextAreaField from "./TextAreaField";
 
-const AddProject: React.FC = () => {
-    const { formData, loading, handleChange, handleSubmit } = useAddProject({
-        name: "",
-        description: "",
-        date: "",
-        status: "",
-        statusPercentage: 0,
-        location: "",
-        addProjectTo: "",
-    });
+interface AddProjectProps {
+    mode: "create" | "edit";
+}
+
+const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
+    const { id } = useParams<{ id: string }>(); // for edit mode
+    const {
+        formData,
+        loading,
+        handleChange,
+        handleSubmit,
+    } = mode === "edit" && id
+            ? useEditProject(id)
+            : useAddProject({
+                name: "",
+                description: "",
+                date: "",
+                status: "",
+                statusPercentage: 0,
+                location: "",
+                addProjectTo: "",
+            });
+
+    useEffect(() => {
+        if (mode === "edit") {
+            console.log("Editing project ID:", id);
+        }
+    }, [mode, id]);
 
     return (
         <div className="px-0 sm:px-0 lg:px-0 xl:px-0 md:pl-0 lg:pl-0 xl:pl-2 py-2 pr-3 lg:mr-0 xl:mr-0 ">
@@ -36,7 +55,7 @@ const AddProject: React.FC = () => {
                         />
                     </svg>
                     <h1 className="font-semibold text-sm sm:text-base md:text-lg lg:text-xl text-primary uppercase">
-                        Add Project
+                        {mode === "create" ? "Add Project" : "Edit Project"}
                     </h1>
                 </div>
             </Link>
@@ -46,7 +65,6 @@ const AddProject: React.FC = () => {
                 onSubmit={handleSubmit}
                 className="flex flex-col gap-4 sm:gap-6 max-w-6xl w-full text-sm sm:text-base md:text-lg lg:text-xl lg:ml-3 xl:ml-3 md:ml-3"
             >
-                {/* Project Name */}
                 <InputField
                     id="projectName"
                     label="Project Name"
@@ -57,7 +75,6 @@ const AddProject: React.FC = () => {
                     required
                 />
 
-                {/* Description */}
                 <TextAreaField
                     id="description"
                     label="Details"
@@ -69,8 +86,7 @@ const AddProject: React.FC = () => {
                     required
                 />
 
-                {/* Date, Status & Status Percentage */}
-                <div className="flex flex-col items-start gap-[24px] w-full  md:pr-[0px] lg:pr-[400px] xl:pr-[651px]">
+                <div className="flex flex-col items-start gap-[24px] w-full md:pr-[0px] lg:pr-[400px] xl:pr-[651px]">
                     <InputField
                         id="date"
                         label="Date"
@@ -93,6 +109,7 @@ const AddProject: React.FC = () => {
                     />
                     <InputField
                         id="statusPercentage"
+                        type="number"
                         label="Status %"
                         name="statusPercentage"
                         value={formData.statusPercentage ?? 0}
@@ -102,7 +119,6 @@ const AddProject: React.FC = () => {
                     />
                 </div>
 
-                {/* Location */}
                 <InputField
                     id="location"
                     label="Location"
@@ -113,7 +129,6 @@ const AddProject: React.FC = () => {
                     required
                 />
 
-                {/* Add this project to */}
                 <SelectField
                     id="addProjectTo"
                     label="Add This Project To"
@@ -121,18 +136,17 @@ const AddProject: React.FC = () => {
                     value={formData.addProjectTo}
                     onChange={handleChange}
                     options={[
-                        { value: "All Projects", label: "All Projects" },
-                        { value: "My Projects", label: "My Projects" },
-                        { value: "Team Projects", label: "Team Projects" },
+                        { value: "Recent Projects", label: "Recent Projects" },
+                        { value: "Upcoming Projects", label: "Upcoming Projects" },
+                        { value: "Completed Projects", label: "Completed Projects" },
                     ]}
                     required
                 />
 
-                {/* Submit Button */}
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-50 sm:w-75  self-center bg-primary hover:bg-green-900 text-white font-semibold text-sm sm:text-base md:text-lg lg:text-xl px-8 py-3 rounded-xl mt-6 shadow-md hover:shadow-lg transition-all"
+                    className="w-50 sm:w-75 self-center bg-primary hover:bg-green-900 text-white font-semibold text-sm sm:text-base md:text-lg lg:text-xl px-8 py-3 rounded-xl mt-6 shadow-md hover:shadow-lg transition-all"
                 >
                     {loading ? (
                         <span className="flex items-center gap-2">
@@ -158,9 +172,7 @@ const AddProject: React.FC = () => {
                             </svg>
                             Loading...
                         </span>
-                    ) : (
-                        "Save"
-                    )}
+                    ) : mode === "create" ? "Save" : "Update"}
                 </button>
             </form>
 

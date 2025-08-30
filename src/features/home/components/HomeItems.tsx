@@ -50,9 +50,9 @@ const HomeItems = () => {
     <div className='max-w-[1400px] mx-auto px-6 py-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-4'>
       {
         items.map((item) => (
-          <div key={item.id} className='relative transition-transform ease-in-out hover:scale-105 hover:shadow-lg transform duration-300'>
+          <div key={item.id} className='relative transition-transform ease-in-out hover:scale-105  transform duration-300'>
             <div className='pt-10'>
-              <div className='shadow-md border p-8 rounded-tr-xl'>
+              <div className='shadow-md hover:shadow-lg border p-8 rounded-tr-xl'>
                 <h2 className='text-center mb-2 font-semibold'>{item.title}</h2>
                 <p>{item.description} </p>
               </div>

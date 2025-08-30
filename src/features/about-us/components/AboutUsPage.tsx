@@ -8,10 +8,10 @@ const AboutUsPage = () => {
   return (
     <div>
       <AboutUsMain />
-      <Achievement/>
-      <AboutUsHero/>
-      <AboutUsAffiliations/>
-      <AboutUsContent/>
+      <Achievement />
+      <AboutUsHero />
+      <AboutUsAffiliations />
+      <AboutUsContent />
     </div>
   )
 }

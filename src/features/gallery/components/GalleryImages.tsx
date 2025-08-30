@@ -1,95 +1,98 @@
-import { useState, useRef, useEffect, useCallback } from "react";
-import galleryImg1 from "../../../../public/images/galleryImg1.jpg";
-import galleryImg2 from "../../../../public/images/galleryImg2.jpg";
-import galleryImg3 from "../../../../public/images/galleryImg3.jpg";
-import galleryImg4 from "../../../../public/images/galleryImg4.jpg";
-import galleryImg5 from "../../../../public/images/galleryImg5.jpg";
-import galleryImg6 from "../../../../public/images/galleryImg6.jpg";
-import galleryImg7 from "../../../../public/images/galleryImg7.jpg";
-import galleryImg8 from "../../../../public/images/galleryImg8.jpg";
-import galleryImg9 from "../../../../public/images/galleryImg9.jpg";
-import galleryImg10 from "../../../../public/images/galleryImg10.jpg";
-import galleryImg11 from "../../../../public/images/galleryImg11.jpg";
-import galleryImg12 from "../../../../public/images/galleryImg12.jpg";
-import galleryImg13 from "../../../../public/images/galleryImg13.jpg";
-import galleryImg14 from "../../../../public/images/galleryImg14.jpg";
-import galleryImg15 from "../../../../public/images/galleryImg15.jpg";
-import galleryImg16 from "../../../../public/images/galleryImg16.jpg";
+import { useEffect, useRef } from "react";
+import noImg from '../../../assets/noImg.jpg'
+import type { ImageType } from "../hooks/useFetchImages";
 
-const images = [
-  galleryImg1, galleryImg2, galleryImg3, galleryImg4,
-  galleryImg5, galleryImg6, galleryImg7, galleryImg8,
-  galleryImg9, galleryImg10, galleryImg11, galleryImg12,
-  galleryImg13, galleryImg14, galleryImg15, galleryImg16,
-];
-
-// Group images into sets of 4
-function groupImages(imgArray: string[]) {
-  const groups = [];
-  for (let i = 0; i < imgArray.length; i += 4) {
-    groups.push(imgArray.slice(i, i + 4));
-  }
-  return groups;
+interface GalleryProps {
+  fetchDatas: ImageType[];
+  fetchNext?: () => void;
+  hasNext?: boolean;
+  isLoading?: boolean;
 }
 
-const Gallery = () => {
-  const allGroups = groupImages(images);
-  const [visibleGroups, setVisibleGroups] = useState(2); // show 2 groups at first
+const Gallery = ({ fetchDatas, fetchNext, hasNext, isLoading }: GalleryProps) => {
+  const photos = fetchDatas.map((item) => item.photo);
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  // Intersection Observer callback
-  const loadMore = useCallback((entries: IntersectionObserverEntry[]) => {
-    const target = entries[0];
-    if (target.isIntersecting) {
-      setVisibleGroups((prev) => {
-        if (prev < allGroups.length) {
-          return prev + 1; // load next group
-        }
-        return prev;
-      });
-    }
-  }, [allGroups.length]);
-
-  // Setup observer
+  // Infinite scroll observer
   useEffect(() => {
-    const observer = new IntersectionObserver(loadMore, { threshold: 0.5 });
-    if (loaderRef.current) observer.observe(loaderRef.current);
+    if (!fetchNext || !hasNext) return;
 
-    return () => {
-      if (loaderRef.current) observer.unobserve(loaderRef.current);
-    };
-  }, [loadMore]);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) fetchNext();
+      },
+      { threshold: 1.0 }
+    );
+
+    if (loaderRef.current) observer.observe(loaderRef.current);
+    return () => observer.disconnect();
+  }, [fetchNext, hasNext]);
+
+  const groupImages = (arr: string[], chunkSize = 4) => {
+    const groups: string[][] = [];
+    for (let i = 0; i < arr.length; i += chunkSize) {
+      groups.push(arr.slice(i, i + chunkSize));
+    }
+    return groups;
+  };
+
+  const groupedImages = groupImages(photos);
+
+  const mobilePattern = [
+    [0, [1, 2]],
+    [3, [4]],
+    [[5, 6], 7],
+    [8, [9, 10]],
+    [11, [12]],
+    [[13, 14], 15]
+  ];
 
   return (
-    <div className="max-w-[1400px] mx-auto p-4 space-y-6">
-      {allGroups.slice(0, visibleGroups).map((group, i) => {
-        const [left, top, bottom, right] = group;
-        return (
-          <div key={i} className="grid grid-cols-3 gap-4">
-            {left && (
-              <img src={left} alt="image" className="w-full h-full object-cover rounded-lg shadow-md transition-transform duration-300 hover:shadow-lg hover:scale-103" />
-            )}
-            <div className="flex flex-col gap-4">
-              {top && (
-                <img src={top} alt="image" className="w-full h-full object-cover rounded-lg shadow-md transition-transform duration-300 hover:shadow-lg hover:scale-103" />
-              )}
-              {bottom && (
-                <img src={bottom} alt="image" className="w-full h-full object-cover rounded-lg shadow-md transition-transform duration-300 hover:shadow-lg hover:scale-103" />
-              )}
+    <div className="max-w-7xl mx-auto p-4 space-y-6">
+      {/* Desktop layout */}
+      <div className="hidden md:block space-y-6">
+        {groupedImages.map((group, i) => {
+          const [left, top, bottom, right] = group;
+          return (
+            <div key={i} className="flex gap-4 h-[500px] lg:h-[600px] xl:h-[800px]">
+              {left && <img src={left} alt={`gallery-${i}-left`} className="w-1/3 h-full object-cover rounded-lg transition-transform duration-300 hover:scale-105" onError={(e) => e.currentTarget.src = noImg} />}
+              <div className="flex flex-col w-1/3 gap-2 h-full">
+                {top && <img src={top} alt={`gallery-${i}-top`} className="flex-1 object-cover rounded-lg transition-transform duration-300 hover:scale-105" onError={(e) => e.currentTarget.src = noImg} />}
+                {bottom && <img src={bottom} alt={`gallery-${i}-bottom`} className="flex-1 object-cover rounded-lg transition-transform duration-300 hover:scale-105" onError={(e) => e.currentTarget.src = noImg} />}
+              </div>
+              {right && <img src={right} alt={`gallery-${i}-right`} className="w-1/3 h-full object-cover rounded-lg transition-transform duration-300 hover:scale-105" onError={(e) => e.currentTarget.src = noImg} />}
             </div>
-            {right && (
-              <img src={right} alt="image" className="w-full h-full object-cover rounded-lg shadow-md transition-transform duration-300 hover:shadow-lg hover:scale-103" />
-            )}
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
 
-      {/* Loader target */}
-      {visibleGroups < allGroups.length && (
-        <div ref={loaderRef} className="text-center py-6 text-gray-500">
-          Loading more...
-        </div>
-      )}
+      {/* Mobile layout */}
+      <div className="block md:hidden space-y-4">
+        {mobilePattern.map((pattern, i) => {
+          const [col1, col2] = pattern;
+          const col1Images = Array.isArray(col1) ? col1 : [col1];
+          const col2Images = Array.isArray(col2) ? col2 : [col2];
+
+          return (
+            <div key={i} className="flex gap-4">
+              <div className="flex flex-col w-1/2 gap-2">
+                {col1Images.map(idx => (
+                  <img key={idx} src={photos[idx] || noImg} alt={`gallery-m-${idx}`} className="w-full h-full object-cover rounded-lg transition-transform duration-300 hover:scale-105" onError={(e) => e.currentTarget.src = noImg} />
+                ))}
+              </div>
+              <div className="flex flex-col w-1/2 gap-2">
+                {col2Images.map(idx => (
+                  <img key={idx} src={photos[idx] || noImg} alt={`gallery-m-${idx}`} className="w-full h-full object-cover rounded-lg transition-transform duration-300 hover:scale-105" onError={(e) => e.currentTarget.src = noImg} />
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Loader div triggers infinite scroll */}
+      {hasNext && <div ref={loaderRef} className="h-10" />}
+      {isLoading && <p className="text-center py-4">Loading more images...</p>}
     </div>
   );
 };

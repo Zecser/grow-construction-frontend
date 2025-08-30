@@ -28,8 +28,8 @@ const AboutUsHero = () => {
           className={`bg-input py-4 px-8 rounded-lg ${item.colSpan || ""} 
             transition-transform duration-300 ease-in-out transform hover:scale-103 hover:shadow-lg`}
         >
-          <h1 className="font-bold mb-2">{item.title}</h1>
-          <p className="text-justify text-sm leading-relaxed">{item.text}</p>
+          <h1 className="font-bold text-xl mb-2">{item.title}</h1>
+          <p className="text-justify text-md leading-relaxed">{item.text}</p>
         </div>
       ))}
     </div>

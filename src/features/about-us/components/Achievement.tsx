@@ -14,9 +14,7 @@ const Achievement = () => {
                         <div>
                             <p className='text-xl mb-2'>Workers</p>
                             <p className='text-4xl font-bold'>
-                                <CountUp
-                                    start={0}
-                                    end={100}
+                                <CountUp start={0} end={100}
                                     duration={8}
                                 />+
                             </p>

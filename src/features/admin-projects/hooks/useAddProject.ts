@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { projectSchema } from "../validation/validationZod";
+import api from "../../../lib/api";
 
 interface ProjectForm {
     name: string;
@@ -10,7 +11,7 @@ interface ProjectForm {
     status: string;
     statusPercentage?: number;
     location: string;
-    addProjectTo: any;
+    addProjectTo: string;
 }
 
 export const useAddProject = (initialState: ProjectForm) => {
@@ -24,12 +25,23 @@ export const useAddProject = (initialState: ProjectForm) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
+    const mapAddProjectToStatus = (addProjectTo: string) => {
+        switch (addProjectTo) {
+            case "Recent Projects":
+                return "recent";
+            case "Upcoming Projects":
+                return "upcoming";
+            case "Completed Projects":
+                return "completed";
+            default:
+                return "recent";
+        }
+    };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
 
-        // Validate form data using Zod schema
         const result = projectSchema.safeParse(formData);
         if (!result.success) {
             result.error.issues.forEach((issue) => {
@@ -38,18 +50,33 @@ export const useAddProject = (initialState: ProjectForm) => {
             setLoading(false);
             return;
         }
+        try {
+            const status = mapAddProjectToStatus(formData.addProjectTo);
 
-        setTimeout(() => {
-            setLoading(false);
+            const payload = {
+                title: formData.name,
+                description: formData.description,
+                location: formData.location,
+                status: status.toLowerCase(),
+                status_percentage: formData.statusPercentage || 0,
+                start_date: formData.date,
+                budget: "1324355.00",
+            };
+
+            await api.post("/projects/", payload);
             toast.success("Project Saved Successfully!");
 
-            // Navigate to project page after toast message
             setTimeout(() => {
                 navigate("/admin/projects", { replace: true });
             }, 1500);
-        }, 2000);
-    };
 
+        } catch (error: any) {
+            console.error("API Error:", error.response?.data || error.message);
+            toast.error(JSON.stringify(error.response?.data) || "Failed to save project!");
+        } finally {
+            setLoading(false);
+        }
+    };
     return {
         formData,
         loading,

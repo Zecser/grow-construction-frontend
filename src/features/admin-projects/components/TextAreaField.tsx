@@ -23,7 +23,7 @@ const TextAreaField: React.FC<TextAreaFieldProps> = ({
 }) => {
     return (
         <div className="flex flex-col items-start gap-[6px] w-full">
-            <label htmlFor={id} className="text-sm sm:text-base md:text-lg lg:text-xltext-primary font-normal">{label}</label>
+            <label htmlFor={id} className="text-sm sm:text-base md:text-lg lg:text-xl text-primary font-normal">{label}</label>
             <textarea
                 id={id}
                 name={name}
