@@ -21,45 +21,45 @@ export const useServiceForm = () => {
   const [servicePhotoPreview, setServicePhotoPreview] = useState<string | null>(null);
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  
 
-const validateField = async (fieldName: string, value: any) => {
-  try {
-    const formData: any = {
-      serviceName,
-      serviceIcon,
-      serviceBanner,
-      servicePhoto,
-      serviceSubTitle,
-      serviceSubDescription,
-      offers,
-      whyUsList,
-      status,
-    };
 
-    // Update only the specific field for validation
-    if (fieldName.startsWith("offers[")) {
-      const match = fieldName.match(/offers\[(\d+)\]\.(\w+)/);
-      if (match) {
-        const [, idx, key] = match;
-        formData.offers[Number(idx)][key] = value;
+  const validateField = async (fieldName: string, value: any) => {
+    try {
+      const formData: any = {
+        serviceName,
+        serviceIcon,
+        serviceBanner,
+        servicePhoto,
+        serviceSubTitle,
+        serviceSubDescription,
+        offers,
+        whyUsList,
+        status,
+      };
+
+      // Update only the specific field for validation
+      if (fieldName.startsWith("offers[")) {
+        const match = fieldName.match(/offers\[(\d+)\]\.(\w+)/);
+        if (match) {
+          const [, idx, key] = match;
+          formData.offers[Number(idx)][key] = value;
+        }
+      } else if (fieldName.startsWith("whyUsList[")) {
+        const match = fieldName.match(/whyUsList\[(\d+)\]\.(\w+)/);
+        if (match) {
+          const [, idx, key] = match;
+          formData.whyUsList[Number(idx)][key] = value;
+        }
+      } else {
+        formData[fieldName] = value;
       }
-    } else if (fieldName.startsWith("whyUsList[")) {
-      const match = fieldName.match(/whyUsList\[(\d+)\]\.(\w+)/);
-      if (match) {
-        const [, idx, key] = match;
-        formData.whyUsList[Number(idx)][key] = value;
-      }
-    } else {
-      formData[fieldName] = value;
+
+      await serviceFormSchema.validateAt(fieldName, formData);
+      setErrors((prev) => ({ ...prev, [fieldName]: "" }));
+    } catch (err: any) {
+      setErrors((prev) => ({ ...prev, [fieldName]: err.message }));
     }
-
-    await serviceFormSchema.validateAt(fieldName, formData);
-    setErrors((prev) => ({ ...prev, [fieldName]: "" }));
-  } catch (err: any) {
-    setErrors((prev) => ({ ...prev, [fieldName]: err.message }));
-  }
-};
+  };
 
 
   const handleImageChange = (
@@ -128,17 +128,17 @@ const validateField = async (fieldName: string, value: any) => {
       };
 
       try {
-      //     const res = await api.post("/api/services", formData, {
-      //   headers: { "Content-Type": "multipart/form-data" },
-      // });
-         console.log("Submitting form:", formData);
-      toast.success("Service saved successfully!");
-      handleCancel();
+        //     const res = await api.post("/api/services", formData, {
+        //   headers: { "Content-Type": "multipart/form-data" },
+        // });
+        console.log("Submitting form:", formData);
+        toast.success("Service saved successfully!");
+        handleCancel();
       } catch (error) {
         console.error("Error submitting form:", error);
         toast.error("Failed to save service. Please try again.");
       }
-     
+
     } catch (err: any) {
       const newErrors: { [key: string]: string } = {};
       if (err.inner) {
@@ -184,6 +184,6 @@ const validateField = async (fieldName: string, value: any) => {
     handleSubmitForm,
     handleCancel,
     errors,
-    validateField 
+    validateField
   };
 };

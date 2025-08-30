@@ -8,3 +8,4 @@ export {default as ResetPassword  }from "./ResetPassword";
 export {default as Profile  }from "./Profile";
 export {default as ProfileEditpage  }from "./ProfileEdit";
 export {default as ProjectCreate  }from "./ProjectCreate";
+export {default as ForgotPassword  }from "./ForgotPassword";

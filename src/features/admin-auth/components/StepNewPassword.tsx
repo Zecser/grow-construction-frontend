@@ -9,6 +9,7 @@ interface StepNewPasswordProps {
   setPassword: (v: string) => void;
   setConfirm: (v: string) => void;
   onSubmit: () => void;
+  loading:boolean;
 }
 
 export default function StepNewPassword({
@@ -17,6 +18,7 @@ export default function StepNewPassword({
   setPassword,
   setConfirm,
   onSubmit,
+  loading
 }: StepNewPasswordProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [localError, setLocalError] = useState<string>("");
@@ -72,8 +74,8 @@ export default function StepNewPassword({
         <p className="text-sm text-red-500">{localError}</p>
       )}
 
-      <Button className="w-full text-white" onClick={handleSubmit}>
-        Create
+      <Button className="w-full text-white" onClick={handleSubmit} disabled={loading}>
+        {loading ? "Submiting..." : "Create"}
       </Button>
     </div>
   );

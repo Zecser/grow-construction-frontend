@@ -1,4 +1,4 @@
-import { Route } from "react-router-dom";
+import { Navigate, Route } from "react-router-dom";
 import AdminLayout from "../layouts/AdminLayout";
 import AdminOnlyRoute from "../components/route-protection/AdminOnlyRoute";
 import {
@@ -12,34 +12,46 @@ import {
   ResetPassword,
   Profile,
   ProjectCreate,
-
+  ForgotPassword,
 } from "../pages/admin";
 import ProjectListPage from "@/pages/admin/ProjectListPage";
 import ProjectDetailPage from "@/pages/admin/ProjectDetailPage";
 
-const AdminRoutes = () => (
-  <>
-    <Route path="/admin/login" element={<Login />} />
-    <Route path="/admin/*" element={<AdminOnlyRoute />}>
-      <Route element={<AdminLayout />}>
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="gallery" element={<Gallery />} />
+const AdminRoutes = (isAdmin: boolean) => {
+  
+  
+  return (
+    <>
+      <Route path="/admin/login" element={<Login />} /> {/*Abhitha*/}
+      <Route path="/admin/forgot-password" element={<ForgotPassword />} /> {/*Abhitha*/}
 
-       
-        <Route path="projects/*">
-          <Route id="projects" path="" element={<Projects />} />
-          <Route id="projects" path="create" element={<ProjectCreate />} />
+      <Route path="/admin/*" element={<AdminOnlyRoute isAdmin={isAdmin} />}>
+        <Route element={<AdminLayout />}>
+          <Route path="dashboard" element={<Dashboard />} /> {/*Justin*/}
+          <Route path="gallery" element={<Gallery />} /> {/*Nived*/}
+
+          <Route path="projects/*">
+            <Route id="projects" path="" element={<Projects />} /> {/*Shabana*/}
+            <Route id="projects" path="create" element={<ProjectCreate />} /> {/*Shabana*/}
+          </Route>
+          <Route path="projects/:category" element={<ProjectListPage />} /> {/*Pranav*/}
+          <Route
+            path="projects/:projectId"
+            element={<ProjectDetailPage />}
+          /> {/*Pranav*/}
+          <Route path="reports" element={<Reports />} /> {/*Justin*/}
+          <Route path="services" element={<Services />} /> {/*Nived*/}
+          <Route path="profile/edit" element={<ProfileEditpage />} /> {/*Arathi*/}
+          <Route path="profile/reset-password" element={<ResetPassword />} /> {/*Shabana*/}
+          <Route path="profile" element={<Profile />} /> {/*Arathi*/}
+          <Route
+            path="*"
+            element={<Navigate to="/admin/dashboard" replace />}
+          />
         </Route>
-        <Route path="projects/:category" element={<ProjectListPage />} />
-       <Route path="projects/view/:projectId" element={<ProjectDetailPage />} />
-        <Route path="reports" element={<Reports />} />
-        <Route path="services" element={<Services />} />
-        <Route path="profile/edit" element={<ProfileEditpage />} />
-        <Route path="profile/reset-password" element={<ResetPassword />} />
-        <Route path="profile" element={<Profile />} />
       </Route>
-    </Route>
-  </>
-);
+    </>
+  );
+};
 
 export default AdminRoutes;

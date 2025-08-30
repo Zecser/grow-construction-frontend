@@ -1,35 +1,52 @@
 import { useState } from "react";
+import axios from "axios";
 import { z } from "zod";
+import { useDispatch } from "react-redux";
+import { setAdmin, setLoading, setError, type AdminType } from "@/store/adminAuthSlice";
 
+export const baseURL = import.meta.env.VITE_API_URL || "";
 export const loginSchema = z.object({
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export const useLogin = () => {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+  const [loading, setLoadingState] = useState(false);
+  const [error, setErrorState] = useState<string | null>(null);
+  const dispatch = useDispatch()
 
-    const login = async (data: LoginFormValues) => {
-        try {
-            setLoading(true);
-            setError(null);
+  const login = async (data: LoginFormValues) => {
+    try {
+      setLoadingState(true);
+      setErrorState(null);
+      dispatch(setLoading(true))
 
-            await new Promise((res) => setTimeout(res, 2000));
+      const response = await axios.post(`${baseURL}/login/`, {
+        email: data.email,
+        password: data.password
+      })
 
-            if (data.email === "admin@gmail.com") {
-                throw new Error("Invalid credentials");
-            }
+      const resData = response.data
 
-            console.log("Logged in:", data);
-        } catch (err: any) {
-            setError(err.message || "Something went wrong");
-        } finally {
-            setLoading(false);
-        }
-    };
+      localStorage.setItem("accessToken", resData?.access)
+      localStorage.setItem("refreshToken", resData?.refresh)
 
-    return { login, loading, error };
+      dispatch(setAdmin(resData?.user as AdminType))
+
+      return true;
+    } catch (err: any) {
+      const msg =
+        err.response?.data?.detail || err.message || "Login failed. Try again.";
+      setErrorState(msg);
+      dispatch(setError(msg));
+      return false;
+    } finally {
+      setLoadingState(false);
+      dispatch(setLoading(false));
+    }
+  };
+
+  return { login, loading, error };
 };

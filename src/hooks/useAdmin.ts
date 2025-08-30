@@ -1,9 +1,13 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setAdmin, setError, setLoading } from "../store/adminAuthSlice";
+import { setAdmin, setError, setLoading, type AdminType } from "../store/adminAuthSlice";
 import type { RootState } from "@/store";
 import { useLocation } from "react-router-dom";
 
+import api from "@/lib/api";
+
+
+export const baseURL = import.meta.env.VITE_API_URL || "";
 
 export const useAdmin = () => {
     const dispatch = useDispatch();
@@ -15,30 +19,16 @@ export const useAdmin = () => {
             dispatch(setLoading(true));
             try {
                 console.log("checking admin..")
-                // const res = await api.get("/me/", { withCredentials: true });
+                const res = await api.get("/me/", { withCredentials: true });
 
-                // const data = res.data;
-                // if (data) {
-                //     dispatch(setAdmin(data));
-                // }
-                // else {
-                //     throw Error("Unauthorised")
-                // }
+                const data: AdminType = res.data;
 
-                await new Promise((res) => {
-                    setTimeout(res, 3000);
-                });
-
-                dispatch(setAdmin(
-
-                    {
-                        id: 1,
-                        first_name: "admin",
-                        last_name: "adm",
-                        email: "admin@gmail.com"
-                    }
-                    // null
-                ));
+                if (data) {
+                    dispatch(setAdmin(data));
+                }
+                else {
+                    throw Error("Unauthorised")
+                }
 
             } catch (err: any) {
                 dispatch(setAdmin(null));

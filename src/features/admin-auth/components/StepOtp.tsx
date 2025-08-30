@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef } from "react"; 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -6,9 +6,10 @@ interface StepOtpProps {
   otp: string[];
   setOtp: (v: string[]) => void;
   onNext: () => void;
+  loading: boolean;
 }
 
-export default function StepOtp({ otp, setOtp, onNext }: StepOtpProps) {
+export default function StepOtp({ otp, setOtp, onNext, loading }: StepOtpProps) {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const handleOtpChange = (val: string, index: number) => {
@@ -36,7 +37,7 @@ export default function StepOtp({ otp, setOtp, onNext }: StepOtpProps) {
   return (
     <div className="space-y-4">
       <p className="text-sm text-gray-500 text-center">
-        Enter the 4 digit verification code sent to your email.
+        Enter the 6 digit verification code sent to your email.
       </p>
       <div className="flex justify-center gap-2">
         {otp.map((digit, i) => (
@@ -56,9 +57,9 @@ export default function StepOtp({ otp, setOtp, onNext }: StepOtpProps) {
       <Button
         className="w-full text-white"
         onClick={onNext}
-        disabled={otp.some((d) => d === "")}
+        disabled={otp.some((d) => d === "") || loading}
       >
-        Next
+        {loading ? "Verifying..." : "Next"}
       </Button>
     </div>
   );

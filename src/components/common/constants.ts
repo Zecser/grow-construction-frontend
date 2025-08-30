@@ -4,6 +4,7 @@ import {
     Image,
     BarChart,
     FolderOpen,
+    UserCircle,
 } from "lucide-react";
 
 export const SITE_DESCRIPTION =
@@ -54,5 +55,10 @@ export const ADMIN_NAV_LINKS = [
         label: "Projects",
         path: "/admin/projects",
         icon: FolderOpen,
+    },
+    {
+        label: "Profile",
+        path: "/admin/profile",
+        icon: UserCircle,
     },
 ];

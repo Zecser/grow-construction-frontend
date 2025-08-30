@@ -8,3 +8,4 @@ export { default as ProjectImageSlider } from "./components/ProjectImageSlider";
 export { default as ProjectInfo } from "./components/ProjectInfo";
 export { default as ProjectStatus } from "./components/ProjectStatus";
 export { default as ProjectDownload } from "./components/ProjectDownload";
+export { default as ProjectPage } from "./components/ProjectPage";

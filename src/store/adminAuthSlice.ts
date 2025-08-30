@@ -5,6 +5,9 @@ export type AdminType = {
     first_name: string;
     last_name: string;
     email: string;
+    phone: string;
+    is_staff: boolean;
+    is_superuser: boolean;
 }
 interface AuthState {
     admin: AdminType | null;
@@ -15,6 +18,7 @@ interface AuthState {
 
 const initialState: AuthState = {
     admin: null,
+   
     loading: true,
     error: null,
     checked: false
@@ -25,7 +29,7 @@ const userAuthSlice = createSlice({
     initialState,
     reducers: {
         setAdmin(state, action) {
-            state.admin = action.payload;
+            state.admin = action.payload;    
             state.loading = false;
             state.error = null;
             state.checked = true;
