@@ -34,6 +34,7 @@
     "react-router-dom": "^7.6.3",
     "recharts": "^2.15.4",
     "sweetalert": "^2.1.2",
+    "sweetalert2": "^11.22.5",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.11",
     "yup": "^1.7.0",

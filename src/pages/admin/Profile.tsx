@@ -1,6 +1,4 @@
-import {
-    Header,
-} from "../../features/admin-profile";
+
 import FetchProfile from "../../features/admin-profile/components/FetchProfile";
 
 const Profile = () => {
@@ -12,7 +10,7 @@ const Profile = () => {
                     xl:pl-[40px] xl:pr-[40px]
                     text-sm sm:text-base md:text-md lg:text-lg xl:text-xl 
                     ">
-            <Header />
+            
             <FetchProfile />
         </div>
     );

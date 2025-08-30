@@ -7,22 +7,23 @@ import {
   useProfile,
   ImageCropper,
 } from "../../features/admin-profile";
+import ArrowBack from "@/components/buttons/ArrowBack";
 
 const ProfileEdit = () => {
-  const { profile, errors, loading, handleChange, updateProfile } = useProfile();
+  const { profile, setProfile, errors, loading, handleChange, updateProfile } = useProfile();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [croppedImage, setCroppedImage] = useState<string>("");
 
-  // Show existing profile photo when opening edit
+  // Show existing profile profile_picture when opening edit
   useEffect(() => {
-    if (profile.photo) {
-      setCroppedImage(profile.photo);
+    if (profile.profile_picture && typeof profile.profile_picture === "string") {
+      setCroppedImage(profile.profile_picture);
     }
-  }, [profile.photo]);
+  }, [profile.profile_picture]);
 
-  // When photo selected
+  // When profile_picture selected
   const handlePhotoChange = (file?: File) => {
     if (file) {
       setSelectedFile(file);
@@ -31,24 +32,45 @@ const ProfileEdit = () => {
   };
 
   // After cropping
-  const handleCropComplete = (croppedDataUrl: string) => {
-    setCroppedImage(croppedDataUrl); // update local photo
+  const handleCropComplete = async (croppedDataUrl: string) => {
+    let file: File;
+
+    if (croppedDataUrl.startsWith("data:image/")) {
+      // Base64 → File
+      const arr = croppedDataUrl.split(",");
+      const mime = arr[0].match(/:(.*?);/)?.[1] || "image/jpg";
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      file = new File([u8arr], "cropped.jpg", { type: mime });
+    } else {
+      // Blob URL → File
+      const response = await fetch(croppedDataUrl);
+      const blob = await response.blob();
+      file = new File([blob], "cropped.jpg", { type: blob.type });
+    }
+
+    // ✅ update both preview and actual profile state
+    setCroppedImage(croppedDataUrl);
+    setProfile((prev) => ({ ...prev, profile_picture: file }));
     setCropModalOpen(false);
   };
 
   // Save button → update local profile
   const handleSave = () => {
-    // update the photo in the existing profile
-    profile.photo = croppedImage;
-    updateProfile(); // call without arguments
+    updateProfile();
   };
 
   return (
     <div className="min-h-screen px-4 py-6 flex justify-center bg-gray-50">
       <div className="w-full max-w-4xl space-y-6">
+        <ArrowBack/>
         <ProfileHeader />
-
-        <ProfilePhoto photo={croppedImage} onPhotoChange={handlePhotoChange} />
+        
+        <ProfilePhoto profile_picture={croppedImage} onPhotoChange={handlePhotoChange} />
 
         <ProfileForm profile={profile} errors={errors} onChange={handleChange} />
 

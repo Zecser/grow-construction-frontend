@@ -1,167 +1,121 @@
-// import { Upload } from "lucide-react";
 import React, { useState } from "react";
 import ImageCropModal from "./ImageCropModal";
-import upload from "../../../assets/upload.png"
+import upload from "../../../assets/upload.png";
+import noimage from "../../../assets/noimage.jpg";
 
 interface ServiceImagesProps {
-  serviceIconPreview: string | null;
-  setServiceIconPreview: React.Dispatch<React.SetStateAction<string | null>>;
-  serviceBannerPreview: string | null;
-  setServiceBannerPreview: React.Dispatch<React.SetStateAction<string | null>>;
-  servicePhotoPreview: string | null;
-  setServicePhotoPreview: React.Dispatch<React.SetStateAction<string | null>>;
-  handleImageChange: (
-    e: React.ChangeEvent<HTMLInputElement>,
-    setFile: React.Dispatch<React.SetStateAction<File | null>>,
-    setPreview: React.Dispatch<React.SetStateAction<string | null>>,
-    fieldName: string
-  ) => void;
-  setServiceIcon: React.Dispatch<React.SetStateAction<File | null>>;
-  setServiceBanner: React.Dispatch<React.SetStateAction<File | null>>;
-  setServicePhoto: React.Dispatch<React.SetStateAction<File | null>>;
-  errors: { [key: string]: string };
+  setIcon: (file: File) => void;
+  setBanner: (file: File) => void;
+  setPhoto: (file: File) => void;
+  errors?: { icon?: string; banner?: string; photo?: string };
+  initialIconUrl?: string | null;
+  initialBannerUrl?: string | null;
+  initialPhotoUrl?: string | null;
 }
 
 const ServiceImages: React.FC<ServiceImagesProps> = ({
-  serviceIconPreview, setServiceIconPreview,
-  serviceBannerPreview, setServiceBannerPreview,
-  servicePhotoPreview, setServicePhotoPreview,
-  handleImageChange, setServiceIcon, setServiceBanner, setServicePhoto,
-  errors
+  setIcon,
+  setBanner,
+  setPhoto,
+  errors,
+  initialIconUrl,
+  initialBannerUrl,
+  initialPhotoUrl,
 }) => {
+  const [iconPreview, setIconPreview] = useState<string | null>(initialIconUrl || null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(initialBannerUrl || null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(initialPhotoUrl || null);
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [cropOpen, setCropOpen] = useState(false);
 
-  const [cropModalOpen, setCropModalOpen] = useState(false);
-  const [tempImageSrc, setTempImageSrc] = useState<string | null>(null);
-  const [originalBannerName, setOriginalBannerName] = useState<string>("");
-
-const handleBannerSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-       setOriginalBannerName(file.name);
-      setTempImageSrc(URL.createObjectURL(file));
-      setCropModalOpen(true);
-    }
-    e.target.value = "";
+    if (!file) return;
+    setIcon(file);
+    setIconPreview(URL.createObjectURL(file));
   };
 
-  const handleBannerCropComplete = (file: File, previewUrl: string) => {
-    setServiceBanner(file);                 
-    setServiceBannerPreview(previewUrl); 
-    if (tempImageSrc) URL.revokeObjectURL(tempImageSrc); 
-    setTempImageSrc(null);
-    setCropModalOpen(false);    
-
+  const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setBannerFile(file);
+    setBanner(file);
+    setCropOpen(true);
   };
 
-  const handleBannerCancel = () => {
-    if (tempImageSrc) URL.revokeObjectURL(tempImageSrc);
-    setTempImageSrc(null);
-    setCropModalOpen(false);
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhoto(file);
+    setPhotoPreview(URL.createObjectURL(file));
   };
+
+  const handleCropComplete = (file: File, previewUrl: string) => {
+    setBannerPreview(previewUrl);
+    setBanner(file);
+  };
+
+  const renderUploadBox = (  label: string,  preview: string | null,  onChange: any) => (
+  <div>
+    <label className="block text-sm font-medium text-primary mb-2">{label}</label>
+    <div className="relative border-2 border-dashed border-primary flex flex-col items-center justify-center w-[176px] h-[130px] lg:w-[380px] lg:h-[158px] overflow-hidden">
+      {preview ? (
+        <img src={preview|| noimage} alt="upload" className="absolute inset-0 w-full h-full object-cover" 
+        onError={(e) => {
+            (e.currentTarget as HTMLImageElement).src = noimage;
+          }}/>
+      ) : (
+        <img src={upload} alt="upload" className="h-12 w-12 mb-8" />
+      )}
+      <input
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={onChange}
+        id={`file-${label}`}
+      />
+      <label
+        htmlFor={`file-${label}`}
+        className="absolute mt-[60px] bg-primary text-white px-3 py-1 rounded text-xs cursor-pointer"
+      >
+        {preview ? "Change" : "Upload"}
+      </label>
+    </div>
+  </div>
+);
+
 
   return (
     <>
       <div className="flex flex-col lg:flex-row gap-6 flex-wrap">
-        {/* Service Icon */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Service Icon</label>
-          <div className="relative border-2 border-dashed border-primary flex flex-col items-center justify-center w-[176px] h-[130px] lg:w-[380px] lg:h-[158px] overflow-hidden">
-            {serviceIconPreview ? (
-              <img src={serviceIconPreview} alt="Preview" className="w-full h-full object-cover" />
-            ) : (
-              // <Upload className="h-8 w-8 text-primary mb-2" />
-              <img src={upload} alt="" className="h-12 w-12 text-primary mb-8" />
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              id="serviceIcon"
-              onChange={(e) => handleImageChange(e, setServiceIcon, setServiceIconPreview, "serviceIcon")}
-            />
-            <label
-              htmlFor="serviceIcon"
-              className="absolute mt-[60px] bg-primary text-white px-3 py-1 rounded text-xs cursor-pointer"
-            >
-              {serviceIconPreview ? "Change" : "Upload"}
-            </label>
-          </div>
-          {errors.serviceIcon && (
-            <span className="text-red-500 text-sm">{errors.serviceIcon}*</span>
-          )}
-        </div>
+  <div className="flex flex-col">
+    {renderUploadBox("Service Icon", iconPreview, handleIconChange)}
+    {errors?.icon && <p className="text-red-500 text-xs mt-1">{errors.icon}</p>}
+  </div>
 
-        {/* Service Banner */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Service Banner</label>
-          <div className="relative border-2 border-dashed border-primary flex flex-col items-center justify-center w-[176px] h-[130px] lg:w-[380px] lg:h-[158px] overflow-hidden">
-            {serviceBannerPreview ? (
-              <img src={serviceBannerPreview} alt="Preview" className="w-full h-full object-cover" />
-            ) : (
-              // <Upload className="h-8 w-8 text-primary mb-2" />
-              <img src={upload} alt=""  className="h-12 w-12 text-primary mb-8" />
+  <div className="flex flex-col">
+    {renderUploadBox("Service Banner", bannerPreview, handleBannerChange)}
+    {errors?.banner && <p className="text-red-500 text-xs mt-1">{errors.banner}</p>}
+  </div>
+</div>
 
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              id="serviceBanner"
-              onChange={handleBannerSelect}
-            />
-            <label
-              htmlFor="serviceBanner"
-              className="absolute mt-[60px] bg-primary text-white px-3 py-1 rounded text-xs cursor-pointer"
-            >
-              {serviceBannerPreview ? "Change" : "Upload"}
-            </label>
-          </div>
-          {errors.serviceBanner && (
-            <span className="text-red-500 text-sm">{errors.serviceBanner}*</span>
-          )}
-        </div>
-      </div>
+<div className="flex flex-col mt-6">
+  {renderUploadBox("Service Photo", photoPreview, handlePhotoChange)}
+  {errors?.photo && <p className="text-red-500 text-xs mt-1">{errors.photo}</p>}
+</div>
 
-      {/* Service Photo */}
-      <div className="w-[176px] h-[130px] lg:w-[380px] lg:h-[158px]">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Service Photo</label>
-        <div className="relative border-2 border-dashed border-primary flex flex-col items-center justify-center w-full h-full overflow-hidden">
-          {servicePhotoPreview ? (
-            <img src={servicePhotoPreview} alt="Preview" className="w-full h-full object-cover" />
-          ) : (
-            // <Upload className="h-8 w-8 text-primary mb-2" />
-              <img src={upload} alt=""  className="h-12 w-12 text-primary mb-8"  />
 
-          )}
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            id="servicePhoto"
-            onChange={(e) => handleImageChange(e, setServicePhoto, setServicePhotoPreview, "servicePhoto")}
-          />
-          <label
-            htmlFor="servicePhoto"
-            className="absolute mt-[60px] bg-primary text-white px-3 py-1 rounded text-xs cursor-pointer"
-          >
-            {servicePhotoPreview ? "Change" : "Upload"}
-          </label>
-        </div>
-        {errors.servicePhoto && (
-          <span className="text-red-500 text-sm ">{errors.servicePhoto}*</span>
-        )}
-      </div>
-
-      {/* Crop Modal */}
-      <ImageCropModal
-        open={cropModalOpen}
-        imageSrc={tempImageSrc}
-        originalName={originalBannerName}
-        onClose={handleBannerCancel}
-        onCropComplete={handleBannerCropComplete}
-      />
+      {bannerFile && cropOpen && (
+        <ImageCropModal
+          open={cropOpen}
+          imageSrc={URL.createObjectURL(bannerFile)}
+          originalName={bannerFile.name}
+          onClose={() => setCropOpen(false)}
+          onCropComplete={handleCropComplete}
+        />
+      )}
     </>
   );
-}
+};
 
 export default ServiceImages;

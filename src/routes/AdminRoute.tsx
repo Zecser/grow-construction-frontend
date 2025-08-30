@@ -45,7 +45,7 @@ const AdminRoutes = (isAdmin: boolean) => {
           <Route path="projects/:category" element={<ProjectListPage />} />{" "}
           {/*Pranav*/}
           <Route
-            path="projects/:projectId"
+            path="project/:projectId"
             element={<ProjectDetailPage />}
           />{" "}
           {/*Pranav*/}

@@ -1,11 +1,6 @@
 import { FaEdit, FaTrash } from "react-icons/fa";
 
-interface ReportCardProps {
-  report: any;
-  statusColor: (status: string) => string;
-  onEdit: (report: any) => void;
-  onDelete: (report: any) => void;
-}
+import type { ReportCardProps } from "../types/reports";
 
 const ReportCards = ({
   report,
@@ -14,15 +9,12 @@ const ReportCards = ({
   onDelete,
 }: ReportCardProps) => {
   return (
-    <div
-      key={report.id}
-      className="border rounded-lg p-4 shadow-[0_1px_4px_-1px_rgba(0,0,0,0.4),0_-1px_4px_-1px_rgba(0,0,0,0.4)] bg-white relative"
-    >
-      <h2 className="font-semibold text-lg mb-3 truncate line-clamp-2">
+    <div className="border rounded-lg p-4 bg-white shadow-[0_1px_4px_-1px_rgba(0,0,0,0.4),0_-1px_4px_-1px_rgba(0,0,0,0.4)]">
+      <h2 className="text-base md:text-lg font-semibold mb-4">
         {report.title}
       </h2>
-      
-        {/* Mobile View */}
+
+      {/* Mobile */}
       <div className="grid grid-cols-2 gap-4 text-xs text-gray-600 mb-4 md:hidden">
         <div className="col-span-2 flex items-center gap-2">
           <div className="flex-1 min-w-0">
@@ -72,7 +64,7 @@ const ReportCards = ({
         </div>
       </div>
 
-      {/* Desktop Layout */}
+      {/* Desktop */}
       <div className="hidden md:grid grid-cols-5 gap-3 text-sm text-gray-600 mb-4">
         <p>
           <span className="font-semibold block">Client ID</span>
@@ -96,7 +88,8 @@ const ReportCards = ({
           <span className="font-semibold block mb-1">Deadline</span>
           {report.deadline}
         </p>
-        <p>
+
+        <div>
           <span className="font-semibold block mb-1">Actions</span>
           <div className="flex items-center gap-2">
             <button
@@ -112,9 +105,8 @@ const ReportCards = ({
               <FaTrash className="w-4 h-4" />
             </button>
           </div>
-        </p>
+        </div>
       </div>
-
 
       <div className="mb-3">
         <p className="text-sm font-medium mb-1">Completion</p>
@@ -123,7 +115,7 @@ const ReportCards = ({
             <div
               className="bg-[#78AF99] h-3 rounded-full"
               style={{ width: `${report.completion}%` }}
-            ></div>
+            />
           </div>
           <span className="text-xs md:text-sm text-gray-800 font-medium">
             {report.completion}%

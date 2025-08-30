@@ -1,78 +1,182 @@
-import { useState, useMemo, useEffect } from "react";
-import { reportsData as dummyReports } from "../data/reportsDummyData";
-import type { Report } from "../types";
-// import api from "../../../lib/api"; 
+import { useEffect, useMemo, useState, useCallback } from "react";
+import api from "../../../lib/api";
+import {
+  type Report,
+  type ProjectsListApi,
+  type ReportsStatsApi,
+  normalizeStatusUI,
+  type StatusFilter,
+  toApiStatus,
+} from "../types/reports";
+
+export const PER_PAGE = 12;
+
+const mapToReport = (r: ProjectsListApi["results"][number]): Report => ({
+  id: String(r.id),
+  title: r.title ?? "",
+  clientId: r.Client_id ?? "",
+  clientName: r.Client_name ?? "",
+  status: normalizeStatusUI(r.status),
+  deadline: r.deadline ?? "",
+  completion: Math.max(0, Math.min(100, Number(r.completion ?? 0))),
+  details: r.details ?? "",
+  startDate: r.start_date ?? "",
+  location: r.location ?? "",
+});
 
 export const useReports = () => {
-  const [reports, setReports] = useState<Report[]>(dummyReports);
+  const [reports, setReports] = useState<Report[]>([]);
+
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All Status");
-  const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("All Status");
 
-  // fetch reports
-  useEffect(() => {
-    const fetchReports = async () => {
-      setLoading(true);
-      try {
-        // const res = await api.get("/reports/"); //  endpoint
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        const res = dummyReports;
-        console.log(res);
-        
-        setReports(res); 
-        
-        // setReports(res.data?.results  || []);
-      } catch (err) {
-        console.error("Failed to fetch reports:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const pageCount = Math.max(1, Math.ceil(totalCount / PER_PAGE));
 
-    fetchReports();
+  const [listLoading, setListLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [listError, setListError] = useState<string | null>(null);
+  const [statsError, setStatsError] = useState<string | null>(null);
+  const loading = listLoading || statsLoading;
+
+  const [stats, setStats] = useState({
+    totalProjects: 0,
+    completedProjects: 0,
+    ongoingProjects: 0,
+    upcomingProjects: 0,
+    avgCompletion: 0,
+  });
+
+  const refetchStats = useCallback(async () => {
+    setStatsLoading(true);
+    setStatsError(null);
+    try {
+      const { data } = await api.get<ReportsStatsApi>("projects/report/");
+      setStats({
+        totalProjects: data.total_projects ?? 0,
+        completedProjects: data.completed_projects ?? 0,
+        ongoingProjects: data.ongoing_projects ?? 0,
+        upcomingProjects: data.upcoming_projects ?? 0,
+        avgCompletion: Math.round(data.average_completion ?? 0),
+      });
+    } catch {
+      setStatsError("Failed to load stats.");
+    } finally {
+      setStatsLoading(false);
+    }
   }, []);
 
-  // stats
-  const totalProjects = reports.length;
-  const completedProjects = reports.filter(r => r.status === "Completed").length;
-  const ongoingProjects = reports.filter(r => r.status === "Ongoing").length;
-  const avgCompletion = totalProjects
-    ? Math.round(reports.reduce((acc, r) => acc + r.completion, 0) / totalProjects)
-    : 0;
+  useEffect(() => {
+    refetchStats();
+  }, [refetchStats]);
 
-  // filtering
-  const filteredReports: Report[] = useMemo(() => {
-    return reports.filter((r) => {
-      return (
-        (statusFilter === "All Status" || r.status === statusFilter) &&
-        (r.clientName.toLowerCase().includes(search.toLowerCase()) ||
-          r.clientId.toLowerCase().includes(search.toLowerCase()) ||
-          r.title.toLowerCase().includes(search.toLowerCase()))
-      );
-    });
-  }, [search, statusFilter, reports]);
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, statusFilter]);
+
+  const buildListRequest = () => {
+    const params: Record<string, string | number> = {
+      page,
+      page_size: PER_PAGE,
+    };
+    let path = "projects/";
+
+    const s = debouncedSearch.trim();
+    if (s) {
+      params.search = s;
+    } else {
+      const apiStatus = toApiStatus(statusFilter);
+      if (apiStatus) path = `projects/${apiStatus}/`;
+    }
+
+    return { path, params };
+  };
+
+  const refetchList = useCallback(async () => {
+    setListLoading(true);
+    setListError(null);
+    try {
+      const { path, params } = buildListRequest();
+      const { data } = await api.get<ProjectsListApi>(path, { params });
+      const items = (data?.results ?? []).map(mapToReport);
+      setReports(items);
+      setTotalCount(Number(data?.count ?? items.length));
+    } catch {
+      setListError("Failed to load projects.");
+      setReports([]);
+      setTotalCount(0);
+    } finally {
+      setListLoading(false);
+    }
+  }, [page, debouncedSearch, statusFilter]);
+  useEffect(() => {
+    refetchList();
+  }, [refetchList]);
+
+  const filteredReports = useMemo(() => reports, [reports]);
 
   const statusColor = (status: string) => {
     switch (status) {
-      case "Completed": return "bg-green-100 text-green-700";
-      case "Ongoing": return "bg-blue-100 text-blue-700";
-      case "On Hold": return "bg-yellow-100 text-yellow-700";
-      case "Not Started": return "bg-gray-200 text-gray-600";
-      default: return "";
+      case "Completed":
+        return "bg-green-100 text-green-700";
+      case "Ongoing":
+        return "bg-blue-100 text-blue-700";
+      case "Upcoming":
+        return "bg-emerald-100 text-emerald-700";
+      default:
+        return "bg-slate-100 text-slate-700";
     }
   };
+
+  const filterByStat = (
+    key: "total" | "completed" | "ongoing" | "upcoming"
+  ) => {
+    if (key === "total") setStatusFilter("All Status");
+    if (key === "completed") setStatusFilter("Completed");
+    if (key === "ongoing") setStatusFilter("Ongoing");
+    if (key === "upcoming") setStatusFilter("Upcoming");
+    setPage(1);
+  };
+
+  const nextPage = () => setPage((p) => Math.min(p + 1, pageCount));
+  const prevPage = () => setPage((p) => Math.max(p - 1, 1));
+  const goToPage = (n: number) => setPage(Math.min(Math.max(1, n), pageCount));
 
   return {
     search,
     setSearch,
     statusFilter,
     setStatusFilter,
-    totalProjects,
-    completedProjects,
-    ongoingProjects,
-    avgCompletion,
+    filterByStat,
+
+    totalProjects: stats.totalProjects,
+    completedProjects: stats.completedProjects,
+    ongoingProjects: stats.ongoingProjects,
+    avgCompletion: stats.avgCompletion,
+    statsLoading,
+    statsError,
+    refetchStats,
+
     filteredReports,
+    listLoading,
+    listError,
+    refetchList,
+
+    page,
+    pageCount,
+    nextPage,
+    prevPage,
+    goToPage,
+
     statusColor,
     loading,
+    skeletonCount: PER_PAGE,
   };
 };

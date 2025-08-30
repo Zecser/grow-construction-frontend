@@ -1,12 +1,12 @@
 import React from "react";
-import HeroSection from "../../components/sections/HeroSection"; // ✅ Reusable Hero
+import HeroSection from "../../components/sections/HeroSection";
 import ContactSection from "../../components/sections/ContactSection";
 import LeaveMessage from "../../components/sections/LeaveMessage";
 
 const ContactUs: React.FC = () => {
   return (
     <div className="bg-white text-black">
-      {/* ✅ Reused Hero Section */}
+      {/* ✅ Hero Section */}
       <HeroSection
         heading="Contact Us"
         image="images/image.png"
@@ -21,8 +21,10 @@ const ContactUs: React.FC = () => {
         }
       />
 
+      {/* ✅ Leave Message */}
       <LeaveMessage />
 
+      {/* ✅ Main Content */}
       <div className="px-4 md:px-20 pb-10">
         <h2 className="text-xl md:text-2xl font-semibold mb-4">
           Ready to Discuss Your Project
@@ -48,6 +50,7 @@ const ContactUs: React.FC = () => {
         </p>
       </div>
 
+      {/* ✅ Contact Section */}
       <ContactSection />
     </div>
   );

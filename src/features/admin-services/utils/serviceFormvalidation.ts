@@ -3,12 +3,12 @@ import * as Yup from "yup";
 export const serviceFormSchema = Yup.object().shape({
   serviceName: Yup.string()
     .min(3, "Service Name must be at least 3 characters")
-    .max(20, "Service Name must be at most 20 characters")
+    .max(50, "Service Name must be at most 50 characters")
     .required("Service Name is required"),
 
-  serviceIcon: Yup.mixed().required("Service Icon is required"),
-  serviceBanner: Yup.mixed().required("Service Banner is required"),
-  servicePhoto: Yup.mixed().required("Service Photo is required"),
+  icon: Yup.mixed().required("Service Icon is required"),
+ banner: Yup.mixed().required("Service Banner is required"),
+  photo: Yup.mixed().required("Service Photo is required"),
 
   serviceSubTitle: Yup.string()
     .min(3, "Sub Title must be at least 3 characters")
@@ -28,7 +28,7 @@ export const serviceFormSchema = Yup.object().shape({
           .max(50, "Offer Heading must be at most 50 characters")
           .required("Offer Heading is required"),
         description: Yup.string()
-          .min(5, "Offer Description must be at least 5 characters")
+          .min(10, "Offer Description must be at least 10 characters")
           .max(300, "Offer Description must be at most 300 characters")
           .required("Offer Description is required"),
       })
@@ -43,7 +43,7 @@ export const serviceFormSchema = Yup.object().shape({
           .max(50, "Why Us Heading must be at most 50 characters")
           .required("Why Us Heading is required"),
         description: Yup.string()
-          .min(5, "Why Us Description must be at least 5 characters")
+          .min(10, "Why Us Description must be at least 10 characters")
           .max(300, "Why Us Description must be at most 300 characters")
           .required("Why Us Description is required"),
       })

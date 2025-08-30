@@ -1,49 +1,53 @@
 import { useState } from "react";
-import { toast } from "react-hot-toast";
-import type { Report } from "../types";
-// import api from "../../../lib/api";
+import api from "../../../lib/api";
 
+// If you already have a Report type elsewhere, import and use it.
+// Keeping it minimal here to avoid UI changes.
+type MinimalReport = { id: string | number; title?: string };
 
-export const useDeleteReport = (
-  
-) => {
-  const [deleteReport, setDeleteReport] = useState<Report | null>(null);
-  const [deloading, setdeLoading] = useState(false);
+export const useDeleteReport = () => {
+  const [deleteReport, setDeleteReport] = useState<MinimalReport | null>(null);
+  const [deloading, setDeloading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleDeleteClick = (report: Report) => {
+  const handleDeleteClick = (report: MinimalReport) => {
+    setError(null);
     setDeleteReport(report);
+  };
+
+  const cancelDelete = () => {
+    setError(null);
+    setDeleteReport(null);
   };
 
   const confirmDelete = async () => {
     if (!deleteReport) return;
-
-    setdeLoading(true);
+    setDeloading(true);
+    setError(null);
     try {
-    //   await api.delete(`/jobs/${deleteReport.id}/`);
-     await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log(deleteReport);
-
-      setDeleteReport(null);
-      toast.success(`Report deleted successfully!`);
-   
-    } catch (error: any) {
-     if (error instanceof Error) {
-        toast.error(error.message);
-      }else {
-        toast.error("Failed to delete report. Try again.");
-      }
+      // IMPORTANT: no leading slash → respects baseURL "/api"
+      await api.delete(`projects/${deleteReport.id}/`);
+      // parent component already refetches after this resolves
+    } catch (e: any) {
+      const msg =
+        e?.response?.data?.detail ||
+        e?.response?.statusText ||
+        e?.message ||
+        "Delete failed";
+      setError(msg);
+      throw e; // let caller decide whether to toast, etc.
     } finally {
-      setdeLoading(false);
+      setDeloading(false);
+      setDeleteReport(null);
     }
   };
 
-  const cancelDelete = () => setDeleteReport(null);
-
   return {
-    deleteReport,
-    handleDeleteClick,
-    confirmDelete,
-    cancelDelete,
-    deloading,
+    deleteReport, // the selected report to delete (or null)
+    handleDeleteClick, // call with a report to open the confirm modal
+    confirmDelete, // performs DELETE /projects/:id/
+    cancelDelete, // closes the confirm modal
+    deloading, // loading flag for the delete action
+    error, // last delete error (if any)
   };
 };

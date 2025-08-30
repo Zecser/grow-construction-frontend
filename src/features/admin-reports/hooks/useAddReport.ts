@@ -1,78 +1,163 @@
 import { useState } from "react";
-import toast from "react-hot-toast";
-import { reportSchema } from "../utils/reportValidation";
-// import api from "../../../lib/api";
+import api from "../../../lib/api";
+import { toast } from "react-hot-toast";
 
-export const useAddReport = (onSuccess: () => void) => {
-  const [report, setReport] = useState({
+type UiStatus = "Ongoing" | "Completed" | "Upcoming";
+type ApiStatus = "ongoing" | "completed" | "upcoming";
+const toApiStatus = (s: UiStatus): ApiStatus =>
+  (s || "Ongoing").toLowerCase() as ApiStatus;
+
+type Values = {
+  title: string;
+  clientName: string;
+  clientId: string;
+  details: string;
+  status: UiStatus;
+  completion: number; 
+  startDate: string | "";
+  deadline: string | "";
+  location: string;
+  budget: string; 
+};
+
+type Errors = Partial<Record<keyof Values, string>>;
+type Touched = Partial<Record<keyof Values, boolean>>;
+
+const isIsoDate = (s: string) => /^\d{4}-\d{2}-\d{2}$/.test(s);
+
+export const useAddReport = (onBack: () => void) => {
+  const [values, setValues] = useState<Values>({
     title: "",
     clientName: "",
+    clientId: "",
     details: "",
     status: "Ongoing",
     completion: 0,
     startDate: "",
     deadline: "",
-    clientId: "",
     location: "",
-    category: "",
+    budget: "",
   });
 
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Errors>({});
+  const [touched, setTouched] = useState<Touched>({});
 
-  // (runs on change)
-  const validateField = async (field: string, value: any) => {
-    try {
-      await reportSchema.validateAt(field, { ...report, [field]: value });
-      setErrors((prev) => ({ ...prev, [field]: "" }));
-    } catch (err: any) {
-      setErrors((prev) => ({ ...prev, [field]: err.message }));
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const setValue = <K extends keyof Values>(key: K, val: Values[K]) => {
+    setValues((v) => ({ ...v, [key]: val }));
+    if (touched[key]) validate({ ...values, [key]: val }, false);
+  };
+
+  const markTouched = (key: keyof Values) =>
+    setTouched((t) => ({ ...t, [key]: true }));
+
+  const validate = (v: Values, setState = true) => {
+    const e: Errors = {};
+
+    // required
+    if (!v.title || !v.title.trim()) e.title = "Project name is required.";
+    if (!v.clientName || !v.clientName.trim())
+      e.clientName = "Client name is required.";
+    if (!v.clientId || !v.clientId.trim())
+      e.clientId = "Client ID is required.";
+    if (!v.details || !v.details.trim()) e.details = "Details are required.";
+
+    // status
+    if (!["Ongoing", "Completed", "Upcoming"].includes(v.status))
+      e.status = "Select a valid status.";
+
+    // completion
+    if (!Number.isFinite(Number(v.completion)))
+      e.completion = "Completion must be a number.";
+    else if (v.completion < 0 || v.completion > 100)
+      e.completion = "Completion must be between 0 and 100.";
+
+    // budget 
+    const bn = Number(v.budget);
+    if (v.budget === "" || !Number.isFinite(bn) || bn < 0)
+      e.budget = "Budget is required and must be a non-negative number.";
+
+    // dates 
+    if (v.startDate && !isIsoDate(v.startDate))
+      e.startDate = "Use format YYYY-MM-DD.";
+    if (v.deadline && !isIsoDate(v.deadline))
+      e.deadline = "Use format YYYY-MM-DD.";
+    if (!e.startDate && !e.deadline && v.startDate && v.deadline) {
+      if (v.startDate > v.deadline)
+        e.deadline = "Deadline must be on/after start date.";
     }
+
+    if (setState) setErrors(e);
+    return { valid: Object.keys(e).length === 0, e };
   };
 
-  const handleChange = (field: string, value: any) => {
-    setReport((prev) => ({ ...prev, [field]: value }));
-    validateField(field, value); 
-  };
+  const submit = async () => {
+    if (submitting) return;
 
-  // (runs on submit)
-  const validate = async () => {
+    setTouched({
+      title: true,
+      status: true,
+      completion: true,
+      startDate: true,
+      deadline: true,
+      budget: true,
+      clientId: true,
+      clientName: true,
+      details: true,
+      location: true,
+    });
+
+    const { valid } = validate(values);
+    if (!valid) return;
+
+    setSubmitting(true);
+    setErrorMessage(null);
+
     try {
-      await reportSchema.validate(report, { abortEarly: false });
-      setErrors({});
-      return true;
-    } catch (err: any) {
-      const newErrors: { [key: string]: string } = {};
-      err.inner.forEach((e: any) => {
-        if (e.path) newErrors[e.path] = e.message;
+      const payload = {
+        title: values.title.trim(),
+        Client_name: values.clientName.trim(),
+        Client_id: values.clientId.trim(),
+        status: toApiStatus(values.status),
+        completion: Math.max(0, Math.min(100, Number(values.completion) || 0)),
+        start_date: values.startDate?.trim() ? values.startDate : null,
+        deadline: values.deadline?.trim() ? values.deadline : null,
+        location: values.location?.trim() || null,
+        details: values.details.trim(),
+        description: values.details.trim(),
+        budget: Number(values.budget).toFixed(2),
+      };
+
+      await api.post("projects/", payload, {
+        headers: { "Content-Type": "application/json" },
       });
-      setErrors(newErrors);
-      return false;
-    }
-  };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const isValid = await validate();
-    if (!isValid) {
-      toast.error("Please fix the errors");
-      return;
-    }
-    setLoading(true);
-    try {
-    // const res = await api.post("reports",)
-    // console.log(res);
-     await new Promise((resolve) => setTimeout(resolve, 1500));
-    toast.success("Report added successfully!");
-    setTimeout(() => onSuccess(), 2000);
-    } catch (error) {
-        if (error instanceof Error) {
-            toast.error(error.message || "Failed to add report. Try again.");
-        }
+      sessionStorage.setItem("reports:dirty", "1");
+      toast.success("Project added");
+      onBack();
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.detail ||
+        err?.response?.statusText ||
+        err?.message ||
+        "Failed to add project.";
+      setErrorMessage(msg);
+      toast.error(msg);
     } finally {
-        setLoading(false);
+      setSubmitting(false);
     }
   };
 
-  return { report, handleChange, handleSubmit, errors,loading  };
+  return {
+    values,
+    setValue,
+    markTouched,
+    errors,
+    touched,
+    submit,
+    submitting,
+    errorMessage,
+  };
 };

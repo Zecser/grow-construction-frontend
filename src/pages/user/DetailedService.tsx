@@ -1,16 +1,43 @@
-
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { serviceDetailsData } from "../../features/service-details/components/serviceDetails";
-import WhyUsSection from "../../features/service-details/components/WhyUsSection";
-import WhatWeOffer from "../../features/service-details/components/WhatWeOffer";
-import ServiceHighlights from "../../features/service-details/components/ServiceHighlights";
-import HeroSection from "../../components/sections/HeroSection"; // ✅ same reusable component
+import HeroSection from "../../components/sections/HeroSection";
 import ContactSection from "../../components/sections/ContactSection";
- // ✅ same image as Home
+import ServiceHighlights from "../../features/service-details/components/ServiceHighlights";
+import WhatWeOffer from "../../features/service-details/components/WhatWeOffer";
+import WhyUsSection from "../../features/service-details/components/WhyUsSection";
+import ImageWithPlaceholder from "../../components/sections/ImageWithPlaceholder"; // 👈 import reusable component
 
 const DetailedService = () => {
   const { id } = useParams<{ id: string }>();
-  const service = serviceDetailsData.find(item => item.id === Number(id));
+  const [service, setService] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // ✅ Scroll to top whenever service changes
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [id]);
+
+  useEffect(() => {
+    const fetchService = async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/services/${id}/`
+        );
+        if (!res.ok) throw new Error("Failed to fetch service");
+        const data = await res.json();
+        setService(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchService();
+  }, [id]);
+
+  if (loading) {
+    return <div className="text-center py-20">Loading service...</div>;
+  }
 
   if (!service) {
     return (
@@ -20,39 +47,42 @@ const DetailedService = () => {
     );
   }
 
-  const { heroTitle, intro } = service;
-
   return (
     <div className="bg-white text-gray-900">
-      {/* ✅ Reused Hero Section */}
+      {/* Hero */}
       <HeroSection
-        heading={heroTitle}
-        image='../images/image.png' 
-        subheading={
-          <>
-            <p>Building a sustainable future through innovative, efficient, and eco-friendly construction solutions that inspire progress.</p>
-            <p className="text-sm mt-2 opacity-90">Services &gt; Service Details</p>
-          </>
-        }
+        heading={service.service_name}
+        image={service.service_banner}
+        subheading={<p>{service.service_sub_title}</p>}
       />
 
+      {/* Highlights */}
       <ServiceHighlights />
 
-      {/* Intro Section */}
+      {/* Intro */}
       <div className="max-w-6xl mx-auto py-12 px-4 grid md:grid-cols-2 gap-10 items-center">
-        <img src={intro.image} alt="Service" className="rounded shadow-lg" />
-        <div>
-          <h2 className="text-xl font-semibold text-primary mb-4">
-            {intro.heading}
+        <ImageWithPlaceholder
+          src={service.service_photo}
+          alt="Service"
+          className="w-full max-w-md rounded-2xl shadow-lg"
+          localStorageKey={`service_photo_${service.id}`} // 👈 cache each service image
+        />
+        <div className="border-2 border-dashed border-gray-300 rounded-2xl shadow-md p-8 bg-white">
+          <h2 className="text-2xl font-bold text-green-700 mb-4">
+            {service.service_sub_title}
           </h2>
-          <div className="border border-dashed border-primary p-4 rounded-md text-sm leading-6">
-            {intro.paragraph}
-          </div>
+          <p className="text-gray-600 text-base leading-relaxed">
+            {service.service_sub_decs}
+          </p>
         </div>
       </div>
 
-      <WhatWeOffer serviceId={service.id} />
-      <WhyUsSection serviceId={service.id} />
+      {/* Offers */}
+      <WhatWeOffer serviceId={Number(id)} />
+
+      {/* Why Us */}
+      <WhyUsSection serviceId={Number(id)} />
+
       <ContactSection />
     </div>
   );

@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { z } from "zod";
 import { useDispatch } from "react-redux";
-import { setAdmin, setLoading, setError, type AdminType } from "@/store/adminAuthSlice";
+import { setAdmin, setError, type AdminType } from "@/store/adminAuthSlice";
 
 export const baseURL = import.meta.env.VITE_API_URL || "";
 export const loginSchema = z.object({
@@ -21,7 +21,6 @@ export const useLogin = () => {
     try {
       setLoadingState(true);
       setErrorState(null);
-      dispatch(setLoading(true))
 
       const response = await axios.post(`${baseURL}/login/`, {
         email: data.email,
@@ -44,7 +43,6 @@ export const useLogin = () => {
       return false;
     } finally {
       setLoadingState(false);
-      dispatch(setLoading(false));
     }
   };
 

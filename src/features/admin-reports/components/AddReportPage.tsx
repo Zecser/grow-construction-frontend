@@ -1,214 +1,235 @@
-import React from "react";
-import { ChevronLeft } from "lucide-react";
-import { Toaster } from "react-hot-toast";
 import { useAddReport } from "../hooks/useAddReport";
 
-interface AddReportPageProps {
-  onBack: () => void;
-}
+export default function AddReportPage({ onBack }: { onBack: () => void }) {
+  const {
+    values,
+    setValue,
+    markTouched,
+    errors,
+    touched,
+    submitting,
+    submit,
+    errorMessage,
+  } = useAddReport(onBack);
 
-const AddReportPage: React.FC<AddReportPageProps> = ({ onBack }) => {
-  const { report, handleChange, handleSubmit, errors, loading } =
-    useAddReport(onBack);
+  const completionDisplay =
+    touched.completion || values.completion !== 0
+      ? String(values.completion)
+      : "0";
+
+  const cls = (bad?: boolean) =>
+    `mt-1 w-full border rounded px-3 py-2 ${
+      bad ? "border-red-500" : "border-gray-300"
+    }`;
 
   return (
-    <div className="p-4 md:p-8 max-w-5xl mx-auto">
-      <Toaster />
-      <p className="mb-6 text-[12px] sm:text-base md:text-[15px]">
+    <div className="p-4 md:p-6 max-w-3xl mx-auto">
+      <h2 className="text-lg font-semibold mb-4">
         Create a new construction project report
-      </p>
-      <div className="flex items-center gap-2 mb-6">
-        <button onClick={onBack} className="text-primary hover:text-primary/80">
-          <ChevronLeft size={22} />
-        </button>
-        <h1 className="text-base md:text-lg font-semibold text-primary">
-          ADD NEW REPORT
-        </h1>
-      </div>
+      </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4 text-sm md:text-base">
-        <div>
-          <label className="block text-primary font-medium mb-1">
-            Project Name
-          </label>
-          <input
-            type="text"
-            value={report.title}
-            onChange={(e) => handleChange("title", e.target.value)}
-            className="w-full h-10 border border-gray-300 rounded-lg shadow-[0_1px_4px_-1px_rgba(0,0,0,0.4),0_-1px_4px_-1px_rgba(0,0,0,0.4)] 
-            focus:outline-none focus:ring-1 focus:ring-primary px-3 py-2 text-xs md:text-sm"
-          />
-          {errors.title && (
-            <p className="text-red-500 text-xs mt-1">{errors.title}</p>
-          )}
+      {errorMessage && (
+        <div className="mb-3 rounded border border-red-300 bg-red-50 px-3 py-2 text-red-700 text-sm">
+          {errorMessage}
         </div>
+      )}
 
-        <div>
-          <label className="block text-primary font-medium mb-1">
-            Client Name
-          </label>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          submit();
+        }}
+        className="space-y-4"
+      >
+        {/* Title */}
+        <label className="text-sm block">
+          <span className="text-gray-600">Project Name</span>
           <input
-            type="text"
-            value={report.clientName}
-            onChange={(e) => handleChange("clientName", e.target.value)}
-            className="w-full h-10 border border-gray-300 rounded-lg shadow-[0_1px_4px_-1px_rgba(0,0,0,0.4),0_-1px_4px_-1px_rgba(0,0,0,0.4)] 
-            focus:outline-none focus:ring-1 focus:ring-primary px-3 py-2 text-xs md:text-sm"
+            className={cls(touched.title && !!errors.title)}
+            value={values.title}
+            onChange={(e) => setValue("title", e.target.value)}
+            onBlur={() => markTouched("title")}
+            aria-invalid={!!(touched.title && errors.title)}
+            required
           />
-          {errors.clientName && (
-            <p className="text-red-500 text-xs mt-1">{errors.clientName}</p>
+          {touched.title && errors.title && (
+            <p className="mt-1 text-xs text-red-600">{errors.title}</p>
           )}
-        </div>
+        </label>
 
-        <div>
-          <label className="block text-primary font-medium mb-1">Details</label>
+        {/* Client Name */}
+        <label className="text-sm block">
+          <span className="text-gray-600">Client Name</span>
+          <input
+            className={cls(touched.clientName && !!errors.clientName)}
+            value={values.clientName}
+            onChange={(e) => setValue("clientName", e.target.value)}
+            onBlur={() => markTouched("clientName")}
+            aria-invalid={!!(touched.clientName && errors.clientName)}
+            required
+          />
+          {touched.clientName && errors.clientName && (
+            <p className="mt-1 text-xs text-red-600">{errors.clientName}</p>
+          )}
+        </label>
+
+        {/* Details */}
+        <label className="text-sm block">
+          <span className="text-gray-600">Details</span>
           <textarea
-            value={report.details}
-            onChange={(e) => handleChange("details", e.target.value)}
-            rows={3}
-            className="w-full border border-gray-300 rounded-lg shadow-[0_1px_4px_-1px_rgba(0,0,0,0.4),0_-1px_4px_-1px_rgba(0,0,0,0.4)] 
-            focus:outline-none focus:ring-1 focus:ring-primary px-3 py-2 text-xs md:text-sm"
+            className={cls(touched.details && !!errors.details)}
+            value={values.details}
+            onChange={(e) => setValue("details", e.target.value)}
+            onBlur={() => markTouched("details")}
+            aria-invalid={!!(touched.details && errors.details)}
+            required
           />
-          {errors.details && (
-            <p className="text-red-500 text-xs mt-1">{errors.details}</p>
+          {touched.details && errors.details && (
+            <p className="mt-1 text-xs text-red-600">{errors.details}</p>
           )}
-        </div>
+        </label>
 
-        <div className="grid grid-cols-2 gap-4 text-xs">
-          <div>
-            <label className="block text-primary font-medium mb-1">
-              Status
-            </label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {/* Status */}
+          <label className="text-sm block">
+            <span className="text-gray-600">Status</span>
             <select
-              value={report.status}
-              onChange={(e) => handleChange("status", e.target.value)}
-              className="w-full h-10 border border-gray-300 rounded-lg shadow-[0_1px_4px_-1px_rgba(0,0,0,0.4),0_-1px_4px_-1px_rgba(0,0,0,0.4)] 
-              focus:outline-none focus:ring-1 focus:ring-primary px-2 py-1 text-xs md:text-sm"
+              className={cls(touched.status && !!errors.status)}
+              value={values.status}
+              onChange={(e) => setValue("status", e.target.value as any)}
+              onBlur={() => markTouched("status")}
+              aria-invalid={!!(touched.status && errors.status)}
             >
               <option>Ongoing</option>
               <option>Completed</option>
-              <option>On Hold</option>
-              <option>Not Started</option>
+              <option>Upcoming</option>
             </select>
-            {errors.status && (
-              <p className="text-red-500 text-xs mt-1">{errors.status}</p>
+            {touched.status && errors.status && (
+              <p className="mt-1 text-xs text-red-600">{errors.status}</p>
             )}
-          </div>
-          <div>
-            <label className="block text-primary font-medium mb-1">
-              Completion (%)
-            </label>
-            <input
-              value={report.completion}
-              onChange={(e) =>
-                handleChange("completion", Number(e.target.value))
-              }
-              className="w-full h-10 border border-gray-300 rounded-lg shadow-[0_1px_4px_-1px_rgba(0,0,0,0.4),0_-1px_4px_-1px_rgba(0,0,0,0.4)] 
-              focus:outline-none focus:ring-1 focus:ring-primary px-2 py-1 text-xs md:text-sm"
-            />
-            {errors.completion && (
-              <p className="text-red-500 text-xs mt-1">{errors.completion}</p>
-            )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 text-xs">
-          <div>
-            <label className="block text-primary font-medium mb-1">
-              Start Date
-            </label>
-            <input
-              type="date"
-              value={report.startDate}
-              onChange={(e) => handleChange("startDate", e.target.value)}
-              className="w-full h-10 border border-gray-300 rounded-lg shadow-[0_1px_4px_-1px_rgba(0,0,0,0.4),0_-1px_4px_-1px_rgba(0,0,0,0.4)] 
-              focus:outline-none focus:ring-1 focus:ring-primary px-2 py-1 text-xs md:text-sm"
-            />
-            {errors.startDate && (
-              <p className="text-red-500 text-xs mt-1">{errors.startDate}</p>
-            )}
-          </div>
-          <div>
-            <label className="block text-primary font-medium mb-1">
-              Deadline
-            </label>
-            <input
-              type="date"
-              value={report.deadline}
-              onChange={(e) => handleChange("deadline", e.target.value)}
-              className="w-full h-10 border border-gray-300 rounded-lg shadow-[0_1px_4px_-1px_rgba(0,0,0,0.4),0_-1px_4px_-1px_rgba(0,0,0,0.4)] 
-              focus:outline-none focus:ring-1 focus:ring-primary px-2 py-1 text-xs md:text-sm"
-            />
-            {errors.deadline && (
-              <p className="text-red-500 text-xs mt-1">{errors.deadline}</p>
-            )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 text-xs">
-          <div>
-            <label className="block text-primary font-medium mb-1">
-              Client ID
-            </label>
-            <input
-              type="text"
-              value={report.clientId}
-              onChange={(e) => handleChange("clientId", e.target.value)}
-              className="w-full h-10 border border-gray-300 rounded-lg shadow-[0_1px_4px_-1px_rgba(0,0,0,0.4),0_-1px_4px_-1px_rgba(0,0,0,0.4)] 
-              focus:outline-none focus:ring-1 focus:ring-primary px-2 py-1 text-xs md:text-sm"
-            />
-            {errors.clientId && (
-              <p className="text-red-500 text-xs mt-1">{errors.clientId}</p>
-            )}
-          </div>
-          <div>
-            <label className="block text-primary font-medium mb-1">
-              Location
-            </label>
-            <input
-              type="text"
-              value={report.location}
-              onChange={(e) => handleChange("location", e.target.value)}
-              className="w-full h-10 border border-gray-300 rounded-lg shadow-[0_1px_4px_-1px_rgba(0,0,0,0.4),0_-1px_4px_-1px_rgba(0,0,0,0.4)] 
-              focus:outline-none focus:ring-1 focus:ring-primary px-2 py-1 text-xs md:text-sm"
-            />
-            {errors.location && (
-              <p className="text-red-500 text-xs mt-1">{errors.location}</p>
-            )}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-primary font-medium mb-1">
-            Add This Project To
           </label>
-          <select
-            value={report.category || ""}
-            onChange={(e) => handleChange("category", e.target.value)}
-            className="w-full h-10 border border-gray-300 rounded-lg shadow-[0_1px_4px_-1px_rgba(0,0,0,0.4),0_-1px_4px_-1px_rgba(0,0,0,0.4)] 
-            focus:outline-none focus:ring-1 focus:ring-primary px-3 py-2 text-xs md:text-sm"
-          >
-            <option value="">Select</option>
-            <option>Recent Projects</option>
-            <option>Archived Projects</option>
-            <option>Favorites</option>
-          </select>
-          {errors.category && (
-            <p className="text-red-500 text-xs mt-1">{errors.category}</p>
-          )}
+
+          {/* Completion */}
+          <label className="text-sm block">
+            <span className="text-gray-600">Completion (%)</span>
+            <input
+              inputMode="numeric"
+              pattern="\d*"
+              className={cls(touched.completion && !!errors.completion)}
+              value={completionDisplay}
+              onChange={(e) => {
+                const digits = e.target.value.replace(/[^\d]/g, "");
+                const norm = digits.replace(/^0+(?=\d)/, "");
+                const n = Math.max(0, Math.min(100, Number(norm || 0)));
+                setValue("completion", n);
+              }}
+              onBlur={() => markTouched("completion")}
+              aria-invalid={!!(touched.completion && errors.completion)}
+            />
+            {touched.completion && errors.completion && (
+              <p className="mt-1 text-xs text-red-600">{errors.completion}</p>
+            )}
+          </label>
         </div>
 
-        <div className="flex justify-center mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {/* Start Date */}
+          <label className="text-sm block">
+            <span className="text-gray-600">Start Date</span>
+            <input
+              type="date"
+              className={cls(touched.startDate && !!errors.startDate)}
+              value={values.startDate || ""}
+              onChange={(e) => setValue("startDate", e.target.value)}
+              onBlur={() => markTouched("startDate")}
+              aria-invalid={!!(touched.startDate && errors.startDate)}
+            />
+            {touched.startDate && errors.startDate && (
+              <p className="mt-1 text-xs text-red-600">{errors.startDate}</p>
+            )}
+          </label>
+
+          {/* Deadline */}
+          <label className="text-sm block">
+            <span className="text-gray-600">Deadline</span>
+            <input
+              type="date"
+              className={cls(touched.deadline && !!errors.deadline)}
+              value={values.deadline || ""}
+              onChange={(e) => setValue("deadline", e.target.value)}
+              onBlur={() => markTouched("deadline")}
+              aria-invalid={!!(touched.deadline && errors.deadline)}
+            />
+            {touched.deadline && errors.deadline && (
+              <p className="mt-1 text-xs text-red-600">{errors.deadline}</p>
+            )}
+          </label>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {/* Client ID  */}
+          <label className="text-sm block">
+            <span className="text-gray-600">Client ID</span>
+            <input
+              className={cls(touched.clientId && !!errors.clientId)}
+              value={values.clientId}
+              onChange={(e) => setValue("clientId", e.target.value)}
+              onBlur={() => markTouched("clientId")}
+              aria-invalid={!!(touched.clientId && errors.clientId)}
+              required
+            />
+            {touched.clientId && errors.clientId && (
+              <p className="mt-1 text-xs text-red-600">{errors.clientId}</p>
+            )}
+          </label>
+
+          {/* Location */}
+          <label className="text-sm block">
+            <span className="text-gray-600">Location</span>
+            <input
+              className="mt-1 w-full border border-gray-300 rounded px-3 py-2"
+              value={values.location}
+              onChange={(e) => setValue("location", e.target.value)}
+              onBlur={() => markTouched("location")}
+            />
+          </label>
+        </div>
+
+        {/* Budget */}
+        <label className="text-sm block">
+          <span className="text-gray-600">Budget</span>
+          <input
+            type="number"
+            min={0}
+            step="0.01"
+            required
+            className={cls(touched.budget && !!errors.budget)}
+            value={values.budget}
+            onChange={(e) => setValue("budget", e.target.value)}
+            onBlur={() => markTouched("budget")}
+            aria-invalid={!!(touched.budget && errors.budget)}
+          />
+          {touched.budget && errors.budget && (
+            <p className="mt-1 text-xs text-red-600">{errors.budget}</p>
+          )}
+        </label>
+
+        <div className="mt-6 flex justify-end">
           <button
-            disabled={loading}
             type="submit"
-            className="px-15 py-2 bg-primary text-white rounded-full text-sm md:text-base font-medium shadow-md hover:bg-primary/90"
+            disabled={submitting}
+            aria-disabled={submitting}
+            aria-busy={submitting}
+            className="
+              px-6 py-2 rounded-full bg-primary text-white
+              disabled:bg-gray-300 disabled:text-gray-500
+              disabled:cursor-not-allowed
+            "
           >
-            {loading ? "Saving..." : "Add Project"}
+            {submitting ? "Adding..." : "Add Project"}
           </button>
         </div>
       </form>
     </div>
   );
-};
-
-export default AddReportPage;
+}

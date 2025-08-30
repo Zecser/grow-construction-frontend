@@ -6,6 +6,9 @@ import { Card } from "../ui/card";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
+import { useState } from "react";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 type LeaveMessageFormValues = z.infer<typeof leaveMessageSchema>;
 
@@ -14,12 +17,41 @@ const LeaveMessageForm = () => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<LeaveMessageFormValues>({
     resolver: zodResolver(leaveMessageSchema),
   });
 
-  const onSubmit = (data: LeaveMessageFormValues) => {
-    console.log("Form Submitted:", data);
+  const [loading, setLoading] = useState(false);
+
+  const onSubmit = async (data: LeaveMessageFormValues) => {
+    setLoading(true);
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/user-request/`,
+        data
+      );
+
+      if (res.status === 201 || res.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Your request has been submitted successfully.",
+          confirmButtonColor: "#16a34a",
+        });
+        reset();
+      }
+    } catch (err: any) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Failed to submit. Please try again later.",
+        confirmButtonColor: "#dc2626",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -46,7 +78,8 @@ const LeaveMessageForm = () => {
             </p>
           )}
         </div>
-        <div className="space-y-4 md:grid grid-cols-2 gap-[20px]" >
+
+        <div className="space-y-4 md:grid grid-cols-2 gap-[20px]">
           <Input
             className="!bg-white"
             placeholder="Location"
@@ -64,6 +97,7 @@ const LeaveMessageForm = () => {
             <p className="text-red-500 text-sm">{errors.email.message}</p>
           )}
         </div>
+
         <div>
           <Input
             className="!bg-white"
@@ -76,6 +110,7 @@ const LeaveMessageForm = () => {
             </p>
           )}
         </div>
+
         <div className="md:py-4">
           <Textarea
             className="!bg-white"
@@ -86,11 +121,13 @@ const LeaveMessageForm = () => {
             <p className="text-red-500 text-sm">{errors.message.message}</p>
           )}
         </div>
+
         <Button
-          type="submit" 
+          type="submit"
           className="w-full text-white"
+          disabled={loading}
         >
-          Submit
+          {loading ? "Submitting..." : "Submit"}
         </Button>
       </form>
     </Card>

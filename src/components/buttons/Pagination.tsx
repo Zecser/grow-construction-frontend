@@ -23,7 +23,7 @@ const Pagination: React.FC<PaginationProps> = ({
         onClick={() => setPage(page - 1)}
         disabled={!previous || page <= 1}
       >
-        Previous
+        Prev
       </Button>
 
       <span className="text-sm text-gray-600">

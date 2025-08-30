@@ -1,42 +1,62 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
+import api from "../../../lib/api"; 
 
 export interface ProfileData {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
   country: string;
   city: string;
-  postalCode: string;
-  taxId: string;
-  photo: string;
+  postal_code: string;
+  tax_id: string;
+  profile_picture: string | File;
   role?: string;
 }
 
-type ProfileErrors = Partial<Record<keyof Omit<ProfileData, "photo" | "role">, string>>;
-
-const fakeApiCall = (duration: number) => new Promise(res => setTimeout(res, duration));
+type ProfileErrors = Partial<
+  Record<keyof Omit<ProfileData, "profile_picture" | "role">, string>
+>;
 
 export const useProfile = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const [profile, setProfile] = useState<ProfileData>({
-    firstName: "", lastName: "", email: "", phone: "",
-    country: "", city: "", postalCode: "", taxId: "", photo: "",
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+    country: "",
+    city: "",
+    postal_code: "",
+    tax_id: "",
+    profile_picture: "",
   });
-
+  const [originalProfile, setOriginalProfile] = useState<ProfileData | null>(null);
   const [errors, setErrors] = useState<ProfileErrors>({});
   const [loading, setLoading] = useState(false);
 
+  // Load profile from location.state OR API
   useEffect(() => {
     const passedUser = location.state?.user as ProfileData;
-    if (passedUser) setProfile(passedUser);
-    else {
-      toast.error("Could not load profile data.");
-      navigate("/admin/profile");
+    if (passedUser) {
+      setProfile(passedUser);
+      setOriginalProfile(passedUser);
+    } else {
+      const fetchProfile = async () => {
+        try {
+          const res = await api.get<ProfileData>("/profile/");
+          setProfile(res.data);
+          setOriginalProfile(res.data);
+        } catch (err) {
+          toast.error("Could not load profile data.");
+          navigate("/admin/profile");
+        }
+      };
+      fetchProfile();
     }
   }, [location.state, navigate]);
 
@@ -48,19 +68,14 @@ export const useProfile = () => {
     }
   };
 
-  const handlePhotoChange = (file?: File) => {
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfile((prev) => ({ ...prev, photo: reader.result as string }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   const validateForm = (): boolean => {
     const newErrors: ProfileErrors = {};
-    const textOnlyFields: (keyof ProfileErrors)[] = ["firstName", "lastName", "country", "city"];
+    const textOnlyFields: (keyof ProfileErrors)[] = [
+      "first_name",
+      "last_name",
+      "country",
+      "city",
+    ];
 
     textOnlyFields.forEach((field) => {
       if (!profile[field]) newErrors[field] = "Required";
@@ -73,33 +88,63 @@ export const useProfile = () => {
     if (!profile.phone) newErrors.phone = "Required";
     else if (!/^\d{10}$/.test(profile.phone)) newErrors.phone = "Must be 10 digits";
 
-    if (!profile.postalCode) newErrors.postalCode = "Required";
-    else if (!/^\d{1,6}$/.test(profile.postalCode)) newErrors.postalCode = "Up to 6 digits";
+    if (!profile.postal_code) newErrors.postal_code = "Required";
+    else if (!/^\d{1,6}$/.test(profile.postal_code)) newErrors.postal_code = "Up to 6 digits";
 
-    if (!profile.taxId) newErrors.taxId = "Required";
-    else if (!/^[a-zA-Z0-9-]{10}$/.test(profile.taxId)) newErrors.taxId = "Must be 10 chars";
+    if (!profile.tax_id) newErrors.tax_id = "Required";
+    else if (!/^[a-zA-Z0-9-]{10}$/.test(profile.tax_id)) newErrors.tax_id = "Must be 10 chars";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const updateProfile = async () => {
-    if (!validateForm()) {
-      toast.error("Please fix errors.");
+  if (!validateForm()) {
+    toast.error("Please fix errors.");
+    return;
+  }
+
+  if (!originalProfile) return;
+
+  setLoading(true);
+  try {
+    const formData = new FormData();
+
+    
+    Object.entries(profile).forEach(([key, value]) => {
+      if (key === "role" || key === "profile_picture") return;
+
+      if (value !== (originalProfile as any)[key]) {
+        formData.append(key, value as string);
+      }
+    });
+
+    
+    if (profile.profile_picture instanceof File) {
+      formData.append("profile_picture", profile.profile_picture);
+    }
+
+    
+    if ([...formData.keys()].length === 0) {
+      toast("No changes to save.");
+      navigate("/admin/profile");
       return;
     }
-    setLoading(true);
-    try {
-      await fakeApiCall(1500);
-      localStorage.setItem("userProfile", JSON.stringify(profile));
-      toast.success("Changes Saved!");
-      navigate("/admin/profile");
-    } catch {
-      toast.error("Failed to save profile.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  return { profile, errors, loading, handleChange, handlePhotoChange, updateProfile };
+    const res = await api.put<ProfileData>("/profile/", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    setProfile(res.data);
+    setOriginalProfile(res.data);
+    toast.success("Changes Saved!");
+    navigate("/admin/profile");
+  } catch (err) {
+    //console.error("failed to update", err);
+    toast.error("Failed to save profile.");
+  } finally {
+    setLoading(false);
+  }
+};
+  return { profile, setProfile, errors, loading, handleChange, updateProfile };
 };
