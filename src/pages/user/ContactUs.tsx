@@ -6,7 +6,6 @@ import LeaveMessage from "../../components/sections/LeaveMessage";
 const ContactUs: React.FC = () => {
   return (
     <div className="bg-white text-black">
-      {/* ✅ Hero Section */}
       <HeroSection
         heading="Contact Us"
         image="images/image.png"
