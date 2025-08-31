@@ -72,7 +72,6 @@ export const useAddProject = (initialState: ProjectForm) => {
 
             await api.post("/projects/", payload);
             toast.success("Project Saved Successfully!");
-
             setTimeout(() => {
                 navigate("/admin/projects", { replace: true });
             }, 1500);

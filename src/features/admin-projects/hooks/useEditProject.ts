@@ -110,11 +110,10 @@ export const useEditProject = (id: string) => {
                 `/projects/${id}/`,
                 payload
             );
-
             toast.success("Project Updated Successfully!");
 
             setTimeout(() => {
-                navigate("/admin/projects", { replace: true });
+                navigate(`/admin/project/${id}`, { replace: true });
             }, 1500);
 
         } catch (error: any) {

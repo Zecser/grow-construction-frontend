@@ -80,7 +80,7 @@ const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
                 />
                 <InputField
                     id="clientId"
-                    type="number"
+                    type="text"
                     label="Client ID"
                     name="clientId"
                     value={formData.clientId}
@@ -112,7 +112,20 @@ const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
 
                 <div className="flex flex-col items-start gap-[24px] w-full md:pr-[0px] lg:pr-[400px] xl:pr-[651px]">
 
-                    <InputField
+                    <SelectField
+                        id="addProjectTo"
+                        label="Status"
+                        name="addProjectTo"
+                        value={formData.addProjectTo}
+                        onChange={handleChange}
+                        options={[
+                            { value: "Ongoing Projects", label: "Ongoing Projects" },
+                            { value: "Upcoming Projects", label: "Upcoming Projects" },
+                            { value: "Completed Projects", label: "Completed Projects" },
+                        ]}
+                        required
+                    />
+                    {/* <InputField
                         id="status"
                         label="Work Status"
                         name="status"
@@ -121,7 +134,7 @@ const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
                         onChange={handleChange}
                         required
                         className="w-full"
-                    />
+                    /> */}
                     <InputField
                         id="statusPercentage"
                         type="number"
@@ -130,6 +143,10 @@ const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
                         value={formData.statusPercentage ?? 0}
                         placeholder="Enter status percentage"
                         onChange={handleChange}
+                        className="appearance-none
+                                    [&::-webkit-inner-spin-button]:appearance-none
+                                    [&::-webkit-outer-spin-button]:appearance-none
+                                    [appearance:textfield]"
                         required
                     />
                     <InputField
@@ -171,21 +188,13 @@ const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
                     value={formData.budget ?? 0}
                     placeholder="Enter Budget"
                     onChange={handleChange}
+                    className="appearance-none
+                                    [&::-webkit-inner-spin-button]:appearance-none
+                                    [&::-webkit-outer-spin-button]:appearance-none
+                                    [appearance:textfield]"
                     required
                 />
-                <SelectField
-                    id="addProjectTo"
-                    label="Add This Project To"
-                    name="addProjectTo"
-                    value={formData.addProjectTo}
-                    onChange={handleChange}
-                    options={[
-                        { value: "Ongoing Projects", label: "Ongoing Projects" },
-                        { value: "Upcoming Projects", label: "Upcoming Projects" },
-                        { value: "Completed Projects", label: "Completed Projects" },
-                    ]}
-                    required
-                />
+
 
 
 
