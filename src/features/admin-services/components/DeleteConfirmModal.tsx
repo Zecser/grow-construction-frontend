@@ -1,4 +1,3 @@
-import { Toaster } from "react-hot-toast";
 
 interface DeleteConfirmModalProps {
   isOpen: boolean;
@@ -26,7 +25,6 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
 
   return (
     <>
-      <Toaster />
       <div
         className="fixed inset-0 flex items-center justify-center bg-black/60 z-50"
         onClick={() => {

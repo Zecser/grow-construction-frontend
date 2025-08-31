@@ -2,7 +2,6 @@ import {
     LayoutDashboard,
     Share2,
     Image,
-    BarChart,
     FolderOpen,
     UserCircle,
 } from "lucide-react";
@@ -46,11 +45,11 @@ export const ADMIN_NAV_LINKS = [
         path: "/admin/gallery",
         icon: Image,
     },
-    {
-        label: "Reports",
-        path: "/admin/reports",
-        icon: BarChart,
-    },
+    // {
+    //     label: "Reports",
+    //     path: "/admin/reports",
+    //     icon: BarChart,
+    // },
     {
         label: "Projects",
         path: "/admin/projects",

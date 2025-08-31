@@ -3,12 +3,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { leaveMessageSchema } from "../../utils/validations/leave-a-message";
 import { z } from "zod";
 import { Card } from "../ui/card";
-import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import FormInput from "./FormInput";
 
 type LeaveMessageFormValues = z.infer<typeof leaveMessageSchema>;
 
@@ -55,66 +55,57 @@ const LeaveMessageForm = () => {
   };
 
   return (
-    <Card className="p-6 space-y-4 bg-black">
+    <Card className="p-6 space-y-4 gap-2 bg-black">
       <p className="text-xl font-semibold text-white">Get A Free Quote</p>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div className="space-y-4 md:grid grid-cols-2 gap-[20px]">
-          <Input
-            className="!bg-white"
-            placeholder="Name"
-            {...register("name")}
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+        <div className="space-y-4 md:grid grid-cols-2 gap-5">
+          <FormInput
+            label="Name"
+            placeholder="Enter your name"
+            name="name"
+            register={register}
+            error={errors.name?.message}
           />
-          {errors.name && (
-            <p className="text-red-500 text-sm">{errors.name.message}</p>
-          )}
-          <Input
-            className="!bg-white"
-            placeholder="Contact Number"
-            {...register("contact_number")}
+          <FormInput
+            label="Contact Number"
+            placeholder="Enter your number"
+            name="contact_number"
+            register={register}
+            error={errors.contact_number?.message}
           />
-          {errors.contact_number && (
-            <p className="text-red-500 text-sm">
-              {errors.contact_number.message}
-            </p>
-          )}
         </div>
 
-        <div className="space-y-4 md:grid grid-cols-2 gap-[20px]">
-          <Input
-            className="!bg-white"
-            placeholder="Location"
-            {...register("location")}
+        <div className="space-y-4 md:grid grid-cols-2 gap-5">
+          <FormInput
+            label="Location"
+            placeholder="Enter location"
+            name="location"
+            register={register}
+            error={errors.location?.message}
           />
-          {errors.location && (
-            <p className="text-red-500 text-sm">{errors.location.message}</p>
-          )}
-          <Input
-            className="!bg-white"
-            placeholder="Email"
-            {...register("email")}
+          <FormInput
+            label="Email"
+            placeholder="Enter email"
+            name="email"
+            register={register}
+            error={errors.email?.message}
           />
-          {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email.message}</p>
-          )}
         </div>
 
-        <div>
-          <Input
-            className="!bg-white"
-            placeholder="Construction Type"
-            {...register("construction_type")}
-          />
-          {errors.construction_type && (
-            <p className="text-red-500 text-sm">
-              {errors.construction_type.message}
-            </p>
-          )}
-        </div>
+        <FormInput
+          label="Construction Type"
+          placeholder="Type of construction"
+          name="construction_type"
+          register={register}
+          error={errors.construction_type?.message}
+        />
 
-        <div className="md:py-4">
+        <div className="md:py-4 flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-200">Message</label>
           <Textarea
             className="!bg-white"
-            placeholder="Message"
+            placeholder="Enter your message"
             {...register("message")}
           />
           {errors.message && (
@@ -122,11 +113,7 @@ const LeaveMessageForm = () => {
           )}
         </div>
 
-        <Button
-          type="submit"
-          className="w-full text-white"
-          disabled={loading}
-        >
+        <Button type="submit" className="w-full text-white" disabled={loading}>
           {loading ? "Submitting..." : "Submit"}
         </Button>
       </form>

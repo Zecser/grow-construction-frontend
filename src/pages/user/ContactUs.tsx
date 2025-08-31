@@ -8,7 +8,7 @@ const ContactUs: React.FC = () => {
     <div className="bg-white text-black">
       <HeroSection
         heading="Contact Us"
-        image="images/image.png"
+        image="images/contact.png"
         subheading={
           <>
             <p>

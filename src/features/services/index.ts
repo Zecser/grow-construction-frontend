@@ -1,0 +1,1 @@
+export { default as ServicePageSkeleton } from './components/ServicePageSkeleton'

@@ -1,7 +1,8 @@
 import { baseURL } from "@/lib/api";
+import { extractErrorMessages } from "@/utils/helpers/extractErrorMessage";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import swal from "sweetalert";
+import toast from "react-hot-toast";
 
 export type Service = {
   id: number;
@@ -19,7 +20,7 @@ const useServices = () => {
       const res = await axios.get(`${baseURL}/services/`);      
       setFetchServices(res.data.results);
     } catch (error: any) {
-      swal(error?.response?.data?.error || "Failed to fetch services");
+      toast.error(extractErrorMessages(error) || "Failed to fetch services");
     } finally {
       setIsLoading(false);
     }

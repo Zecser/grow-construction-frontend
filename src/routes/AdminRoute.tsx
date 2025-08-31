@@ -6,7 +6,6 @@ import {
   Dashboard,
   Gallery,
   Projects,
-  Reports,
   Services,
   ProfileEditpage,
   ResetPassword,
@@ -49,7 +48,9 @@ const AdminRoutes = (isAdmin: boolean) => {
             element={<ProjectDetailPage />}
           />{" "}
           {/*Pranav*/}
-          <Route path="reports" element={<Reports />} /> {/*Justin*/}
+
+          {/* <Route path="reports" element={<Reports />} /> Justin */}
+
           <Route path="services" element={<Services />} /> {/*Nived*/}
           <Route path="profile/edit" element={<ProfileEditpage />} />{" "}
           {/*Arathi*/}

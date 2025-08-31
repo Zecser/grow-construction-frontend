@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Toaster } from "react-hot-toast";
 import { useEditReport } from "../hooks/useEditReport";
 import type { UiStatus, Report } from "../types/reports";
 
@@ -54,7 +53,6 @@ export default function EditReport({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-      <Toaster />
       <div className="w-full max-w-lg rounded-xl bg-white p-4 sm:p-6 shadow-lg">
         <h3 className="text-lg font-semibold mb-4">Edit Project</h3>
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Toaster, toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import ServiceImages from "./ServiceImages";
 import DynamicFields from "./whyUsoffer";
 import ServiceHeading from "./ServiceHeading";
@@ -142,7 +142,6 @@ const AddEditServiceForm: React.FC<AddEditServiceFormProps> = ({ initialService,
 
   return (
     <>
-      <Toaster />
       <div ref={errorRef}>
         <ServiceHeading mode={initialService ? "edit" : "add"} />
         {onCancel && (

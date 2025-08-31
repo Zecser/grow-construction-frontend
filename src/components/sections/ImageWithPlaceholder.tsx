@@ -27,34 +27,35 @@ const ImageWithPlaceholder: React.FC<ImageWithPlaceholderProps> = ({
     }
   }, [localStorageKey]);
 
-  const displaySrc = !error && src
-    ? src
-    : localImage
-      ? localImage
-      : placeholder;
+  const displaySrc =
+    !error && src ? src : localImage ? localImage : placeholder;
 
   return (
     <div className={`relative ${className}`}>
       {!loaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-200 animate-pulse">
-          <img src={placeholder} alt="placeholder" className="w-8 h-8 opacity-60" />
-        </div>
+        <img
+          src={placeholder}
+          alt="placeholder"
+          className="object-contain w-full h-full animate-pulse"
+        />
       )}
-      <img
-        src={displaySrc}
-        alt={alt}
-        onLoad={() => {
-          setLoaded(true);
-          // ✅ Save to localStorage if key + src exists
-          if (localStorageKey && src) {
-            localStorage.setItem(localStorageKey, src);
-          }
-        }}
-        onError={() => setError(true)}
-        className={`object-contain w-full h-full transition-opacity duration-500 ${
-          loaded ? "opacity-100" : "opacity-0"
-        }`}
-      />
+      {loaded && (
+        <img
+          src={displaySrc}
+          alt={alt}
+          onLoad={() => {
+            setLoaded(true);
+            // ✅ Save to localStorage if key + src exists
+            if (localStorageKey && src) {
+              localStorage.setItem(localStorageKey, src);
+            }
+          }}
+          onError={() => setError(true)}
+          className={`object-contain w-full h-full transition-opacity duration-500 ${
+            loaded ? "opacity-100" : "opacity-0"
+          }`}
+        />
+      )}
     </div>
   );
 };

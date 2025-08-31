@@ -3,7 +3,7 @@ import adminReducer from './adminAuthSlice'
 
 export const store = configureStore({
     reducer: {
-        admin: adminReducer
+        admin: adminReducer,
     },
 });
 

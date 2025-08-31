@@ -5,17 +5,13 @@ import ContactSection from "../../components/sections/ContactSection";
 import ServiceHighlights from "../../features/service-details/components/ServiceHighlights";
 import WhatWeOffer from "../../features/service-details/components/WhatWeOffer";
 import WhyUsSection from "../../features/service-details/components/WhyUsSection";
-import ImageWithPlaceholder from "../../components/sections/ImageWithPlaceholder"; // 👈 import reusable component
+import ImageWithPlaceholder from "../../components/sections/ImageWithPlaceholder";
+import { ServicePageSkeleton } from "@/features/services";
 
 const DetailedService = () => {
   const { id } = useParams<{ id: string }>();
   const [service, setService] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // ✅ Scroll to top whenever service changes
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [id]);
 
   useEffect(() => {
     const fetchService = async () => {
@@ -36,7 +32,7 @@ const DetailedService = () => {
   }, [id]);
 
   if (loading) {
-    return <div className="text-center py-20">Loading service...</div>;
+    return <ServicePageSkeleton />;
   }
 
   if (!service) {
@@ -49,23 +45,21 @@ const DetailedService = () => {
 
   return (
     <div className="bg-white text-gray-900">
-      {/* Hero */}
       <HeroSection
         heading={service.service_name}
         image={service.service_banner}
         subheading={<p>{service.service_sub_title}</p>}
+        fallbackImage="/images/service.png"
       />
 
-      {/* Highlights */}
       <ServiceHighlights />
 
-      {/* Intro */}
       <div className="max-w-6xl mx-auto py-12 px-4 grid md:grid-cols-2 gap-10 items-center">
         <ImageWithPlaceholder
           src={service.service_photo}
           alt="Service"
           className="w-full max-w-md rounded-2xl shadow-lg"
-          localStorageKey={`service_photo_${service.id}`} // 👈 cache each service image
+          localStorageKey={`service_photo_${service.id}`}
         />
         <div className="border-2 border-dashed border-gray-300 rounded-2xl shadow-md p-8 bg-white">
           <h2 className="text-2xl font-bold text-green-700 mb-4">

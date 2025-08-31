@@ -18,7 +18,7 @@ const HomePage = () => {
               <HomeContent />
               <HomeItems />
               <Achievement />
-              <OurServices fetchServices={fetchServices} />
+              {fetchServices?.length > 0 && <OurServices fetchServices={fetchServices} />}
             </>
 
           )

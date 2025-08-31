@@ -1,6 +1,6 @@
 import upload from "../../../assets/upload.png";
 import { RefreshCw, Upload, ArrowLeft } from "lucide-react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { useAddPhoto } from "../hooks/useAddPhoto";
 import { useState } from "react";
 
@@ -24,7 +24,6 @@ const AddPhotoForm: React.FC<AddPhotoFormProps> = ({ onCancel, onSuccess }) => {
 
   return (
     <div className="relative w-full min-h-screen p-4">
-      <Toaster />
 
       <button
         type="button"

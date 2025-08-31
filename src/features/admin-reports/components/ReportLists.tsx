@@ -9,7 +9,6 @@ import { useDeleteReport } from "../hooks/useDeleteReport";
 import DeleteReportModal from "./DeleteReportModal";
 import EditReportModal from "./EditReport";
 import type { Report } from "../types/reports";
-import { Toaster } from "react-hot-toast";
 import ReportControls from "./ReportControls"; 
 
 export default function ReportLists() {
@@ -79,7 +78,6 @@ export default function ReportLists() {
 
   return (
     <>
-      <Toaster />
       <div className="p-4 md:p-8 max-w-5xl mx-auto">
         <p className="mb-6 text-[12px] sm:text-base md:text-[15px]">
           Monitor and manage all construction projects with real-time status

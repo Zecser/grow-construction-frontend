@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Toaster } from "react-hot-toast";
 import { useAddProject } from "../hooks/useAddProject";
 import { useEditProject } from "../hooks/useEditProject";
 import SelectField from "./SelectField";
@@ -176,7 +175,6 @@ const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
                 </button>
             </form>
 
-            <Toaster position="top-right" reverseOrder={false} />
         </div>
     );
 };

@@ -7,7 +7,7 @@ import { setAdmin, setError, type AdminType } from "@/store/adminAuthSlice";
 export const baseURL = import.meta.env.VITE_API_URL || "";
 export const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string(),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
