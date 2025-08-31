@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import { useAddProject } from "../hooks/useAddProject";
 import { useEditProject } from "../hooks/useEditProject";
 import SelectField from "./SelectField";
@@ -27,9 +28,17 @@ const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
                 statusPercentage: 0,
                 location: "",
                 addProjectTo: "",
+                clientName: "",
+                clientId: "",
+                deadline: "",
+                budget: 0,
             });
 
-
+    useEffect(() => {
+        if (mode === "edit") {
+            console.log("Editing project ID:", id);
+        }
+    }, [mode, id]);
 
     return (
         <div className="px-0 sm:px-0 lg:px-0 xl:px-0 md:pl-0 lg:pl-0 xl:pl-2 py-2 pr-3 lg:mr-0 xl:mr-0 ">
@@ -61,7 +70,7 @@ const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
                 className="flex flex-col gap-4 sm:gap-6 max-w-6xl w-full text-sm sm:text-base md:text-lg lg:text-xl lg:ml-3 xl:ml-3 md:ml-3"
             >
                 <InputField
-                    id="projectName"
+                    id="title"
                     label="Project Name"
                     name="name"
                     value={formData.name}
@@ -69,9 +78,29 @@ const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
                     onChange={handleChange}
                     required
                 />
+                <InputField
+                    id="clientId"
+                    type="number"
+                    label="Client ID"
+                    name="clientId"
+                    value={formData.clientId}
+                    placeholder="Enter client ID"
+                    onChange={handleChange}
+                    required
+                />
+                <InputField
+                    id="clientName"
+                    label="Client Name"
+                    name="clientName"
+                    value={formData.clientName}
+                    placeholder="Enter client name"
+                    onChange={handleChange}
+                    required
+                />
+
 
                 <TextAreaField
-                    id="description"
+                    id="details"
                     label="Details"
                     name="description"
                     value={formData.description}
@@ -82,16 +111,7 @@ const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
                 />
 
                 <div className="flex flex-col items-start gap-[24px] w-full md:pr-[0px] lg:pr-[400px] xl:pr-[651px]">
-                    <InputField
-                        id="date"
-                        label="Date"
-                        name="date"
-                        type="date"
-                        value={formData.date}
-                        onChange={handleChange}
-                        required
-                        className="w-full"
-                    />
+
                     <InputField
                         id="status"
                         label="Work Status"
@@ -112,6 +132,26 @@ const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
                         onChange={handleChange}
                         required
                     />
+                    <InputField
+                        id="startdate"
+                        label="Start Date"
+                        name="date"
+                        type="date"
+                        value={formData.date}
+                        onChange={handleChange}
+                        required
+                        className="w-full"
+                    />
+                    <InputField
+                        id="deadline"
+                        label="Deadline"
+                        name="deadline"
+                        type="date"
+                        value={formData.deadline}
+                        onChange={handleChange}
+                        required
+                        className="w-full"
+                    />
                 </div>
 
                 <InputField
@@ -123,7 +163,16 @@ const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
                     onChange={handleChange}
                     required
                 />
-
+                <InputField
+                    id="budget"
+                    type="number"
+                    label="Budget"
+                    name="budget"
+                    value={formData.budget ?? 0}
+                    placeholder="Enter Budget"
+                    onChange={handleChange}
+                    required
+                />
                 <SelectField
                     id="addProjectTo"
                     label="Add This Project To"
@@ -131,17 +180,22 @@ const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
                     value={formData.addProjectTo}
                     onChange={handleChange}
                     options={[
-                        { value: "Recent Projects", label: "Recent Projects" },
+                        { value: "Ongoing Projects", label: "Ongoing Projects" },
                         { value: "Upcoming Projects", label: "Upcoming Projects" },
                         { value: "Completed Projects", label: "Completed Projects" },
                     ]}
                     required
                 />
 
+
+
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-50 sm:w-75 self-center bg-primary hover:bg-green-900 text-white font-semibold text-sm sm:text-base md:text-lg lg:text-xl px-8 py-3 rounded-xl mt-6 shadow-md hover:shadow-lg transition-all"
+                    className={`w-50 sm:w-75 self-center text-white font-semibold text-sm sm:text-base md:text-lg lg:text-xl px-8 py-3 rounded-xl mt-6 shadow-md transition-all
+                     ${loading
+                            ? "bg-gray-400 cursor-not-allowed opacity-70"
+                            : "bg-primary hover:bg-green-900 hover:shadow-lg"}`}
                 >
                     {loading ? (
                         <span className="flex items-center gap-2">
@@ -165,12 +219,13 @@ const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
                                     d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
                                 ></path>
                             </svg>
-                            Loading...
+                            {loading && mode === "create" ? "Saving..." : loading && mode === "edit" ? "Updating..." : ""}
                         </span>
                     ) : mode === "create" ? "Save" : "Update"}
                 </button>
             </form>
 
+            <Toaster position="top-right" reverseOrder={false} />
         </div>
     );
 };

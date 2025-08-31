@@ -13,7 +13,7 @@ interface Props {
   category?: string; // 👈 add category
 }
 
-const ProjectCard = ({ project }: Props) => (
+const ProjectCard = ({ project,category }: Props) => (
   <div className="bg-white border border-gray-200 rounded-lg shadow-md p-5 w-full max-w-full min-h-[240px] flex flex-col justify-between lg:max-w-[420px]">
     <div className="w-full flex-grow mx-auto text-left">
       <div className="flex mb-2 text-sm sm:text-base">
@@ -39,7 +39,10 @@ const ProjectCard = ({ project }: Props) => (
     </div>
 
     {/* ✅ Now link includes category + id */}
-    <Link to={`/admin/project/${project.id}`}>
+    <Link to={`/admin/project/${project.id}`}
+    state={{ category }}
+ >
+    
       <button className="px-4 py-2 rounded bg-teal-700 text-white">
         See More
       </button>

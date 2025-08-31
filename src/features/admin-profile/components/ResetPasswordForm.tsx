@@ -1,5 +1,6 @@
 import PasswordField from "./PasswordField";
 import { useResetPassword } from "../hooks/useResetPassword";
+import { Toaster } from "react-hot-toast";
 
 export default function ResetPasswordForm() {
   const {
@@ -56,6 +57,7 @@ export default function ResetPasswordForm() {
           </button>
         </div>
       </div>
+      <Toaster position="top-right" reverseOrder={false} />
     </div>
   );
 }

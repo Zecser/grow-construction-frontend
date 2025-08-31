@@ -1,4 +1,6 @@
-export const APP_NAME = 'Site Name'
+export const APP_NAME = 'BUDGROW BUILDERS'
+
+export const LOGO = '/images/logo.png'
 
 export const CONTACT = {
     email: "fdyfyf@gmail.com",

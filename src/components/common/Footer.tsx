@@ -11,17 +11,19 @@ import {
   ADDRESS,
   SOCIAL_LINKS,
 } from "./constants";
-import { APP_NAME } from "../../utils/constants";
+import { APP_NAME, LOGO } from "../../utils/constants";
 
 const Footer = () => {
   return (
     <footer className="bg-gradient-to-r from-primary to-black w-full text-white">
       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-10">
         <div>
-          <h2 className="text-2xl font-semibold mb-4">{APP_NAME}</h2>
-          <div className="w-32 h-24 bg-gray-300 flex items-center justify-center text-black font-medium mb-4">
-            LOGO
-          </div>
+          <img
+            src={LOGO}
+            alt={APP_NAME}
+            className="w-24 h-24 flex items-center justify-center  font-medium mb-4"
+          />
+          <h2 className="text-xl font-semibold mb-4">{APP_NAME}</h2>
           <p className="text-sm leading-relaxed text-gray-100">
             {SITE_DESCRIPTION}
           </p>

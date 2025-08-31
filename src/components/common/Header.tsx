@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { APP_NAME } from "../../utils/constants";
+import { APP_NAME, LOGO } from "../../utils/constants";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { Menu } from "lucide-react";
 import { NAV_LINKS } from "./constants";
@@ -40,7 +40,10 @@ const Header = () => {
         </Sheet>
       </div>
 
-      <div className="text-lg md:text-xl">{APP_NAME}</div>
+      <div className="text-lg md:text-xl flex items-center gap-2 text-primary font-medium">
+        <img src={LOGO} className="h-7 w-7" />
+        {APP_NAME}
+      </div>
 
       <nav className="hidden md:flex gap-8">
         {NAV_LINKS.map((link) => {

@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  ResponsiveContainer,
-  LabelList,
-} from "recharts";
+import { ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import useStatusCounts from "../hooks/useStatusCounts";
 
 const useIsMobile = () => {
@@ -29,9 +22,50 @@ const useIsMobile = () => {
   return m;
 };
 
+const COLOR_BY_LABEL: Record<string, string> = {
+  Upcoming: "#16a34a",
+  Ongoing: "#047857",
+  Completed: "#60a5fa",
+  Recent: "#9ca3af",
+};
+
+const RAD = Math.PI / 180;
+
+const renderInsideLabel = (isMobile: boolean) => (props: any) => {
+  const { cx, cy, midAngle, outerRadius, percent } = props;
+  const r = outerRadius * 0.65;
+  const x = cx + r * Math.cos(-midAngle * RAD);
+  const y = cy + r * Math.sin(-midAngle * RAD);
+
+  const text = `${Math.round((percent || 0) * 100)}%`;
+
+  return (
+    <text
+      x={x}
+      y={y}
+      textAnchor="middle"
+      dominantBaseline="central"
+      fill="#ffffff"
+      fontWeight={700}
+      fontSize={isMobile ? 12 : 13}
+      style={{
+        paintOrder: "stroke",
+        stroke: "rgba(0,0,0,0.28)",
+        strokeWidth: 2,
+      }}
+    >
+      {text}
+    </text>
+  );
+};
+
 export default function ProjectsCard() {
   const { data } = useStatusCounts();
   const isMobile = useIsMobile();
+
+  const cx = isMobile ? "50%" : "40%";
+  const outerRadius = isMobile ? 100 : 150;
+  const innerRadius = 0;
 
   return (
     <>
@@ -39,37 +73,40 @@ export default function ProjectsCard() {
         <div className="text-base md:text-lg font-semibold">Projects</div>
       </div>
 
-      <div className="mx-auto w-full overflow-x-hidden h-[40vh] min-h-[220px] md:h-[50vh] md:min-h-[280px] md:max-w-[980px] px-4 pb-4">
+      <div className="mx-auto w-full overflow-x-hidden h-[45vh] min-h-[300px] md:h-[55vh] md:min-h-[380px] md:max-w-[980px] px-4 pb-4">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={data}
-            barSize={isMobile ? 30 : 50}
-            barCategoryGap={isMobile ? 10 : 20}
-            margin={{ top: 18, right: 8, left: 8, bottom: isMobile ? 64 : 28 }}
-          >
-            <XAxis
-              dataKey="label"
-              interval={0}
-              tick={{ fontSize: isMobile ? 11 : 12 }}
-              tickMargin={isMobile ? 12 : 10}
-              axisLine={false}
-              tickLine={false}
-              angle={isMobile ? -60 : 0}
-              textAnchor={isMobile ? "end" : "middle"}
-              height={isMobile ? 56 : 28}
-            />
-            <YAxis hide domain={[0, "dataMax + 8"]} />
+          <PieChart>
+            <Pie
+              data={data}
+              dataKey="value"
+              nameKey="label"
+              cx={cx}
+              cy="50%"
+              innerRadius={innerRadius}
+              outerRadius={outerRadius}
+              label={renderInsideLabel(isMobile)}
+              labelLine={false}
+              isAnimationActive={false}
+            >
+              {data.map((entry, i) => (
+                <Cell
+                  key={`slice-${entry.label}-${i}`}
+                  fill={COLOR_BY_LABEL[entry.label] ?? "#166534"}
+                />
+              ))}
+            </Pie>
 
-            <Bar dataKey="value" fill="#166534" radius={[6, 6, 0, 0]}>
-              <LabelList
-                dataKey="value"
-                position="top"
-                offset={6}
-                formatter={(v: any) => `${v}%`}
-                style={{ fontSize: isMobile ? 11 : 12, fontWeight: 600 }}
-              />
-            </Bar>
-          </BarChart>
+            <Legend
+              layout={isMobile ? "horizontal" : "vertical"}
+              align={isMobile ? "center" : "right"}
+              verticalAlign={isMobile ? "bottom" : "middle"}
+              wrapperStyle={{
+                fontSize: isMobile ? 11 : 12,
+                paddingTop: isMobile ? 8 : 0,
+              }}
+              iconType="circle"
+            />
+          </PieChart>
         </ResponsiveContainer>
       </div>
     </>

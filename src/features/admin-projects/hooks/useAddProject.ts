@@ -12,6 +12,10 @@ interface ProjectForm {
     statusPercentage?: number;
     location: string;
     addProjectTo: string;
+    clientName: string;
+    clientId: string;
+    deadline: string;
+    budget?: number;
 }
 
 export const useAddProject = (initialState: ProjectForm) => {
@@ -27,14 +31,14 @@ export const useAddProject = (initialState: ProjectForm) => {
     };
     const mapAddProjectToStatus = (addProjectTo: string) => {
         switch (addProjectTo) {
-            case "Recent Projects":
-                return "recent";
+            case "Ongoing Projects":
+                return "ongoing";
             case "Upcoming Projects":
                 return "upcoming";
             case "Completed Projects":
                 return "completed";
             default:
-                return "recent";
+                return "ongoing";
         }
     };
 
@@ -60,7 +64,10 @@ export const useAddProject = (initialState: ProjectForm) => {
                 status: status.toLowerCase(),
                 status_percentage: formData.statusPercentage || 0,
                 start_date: formData.date,
-                budget: "1324355.00",
+                client_name: formData.clientName,
+                client_id: formData.clientId,
+                deadline: formData.deadline,
+                budget: formData.budget,
             };
 
             await api.post("/projects/", payload);
@@ -71,7 +78,14 @@ export const useAddProject = (initialState: ProjectForm) => {
             }, 1500);
 
         } catch (error: any) {
-            toast.error(JSON.stringify(error.response?.data) || "Failed to save project!");
+            console.error("API Error:", error.response?.data || error.message);
+            const errorMessage =
+                error.response?.data?.message ||
+                error.response?.data?.detail ||
+                error.response?.data?.error ||
+                "Failed to save project!";
+
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }

@@ -47,7 +47,8 @@ const ProjectListPage = () => {
         setProjects(mapped);
         setTotalPages(res.data.totalPages || 1);
       } catch (err) {
-        setError( "Failed to load projects");
+        console.log(err);
+        setError("Failed to load projects");
       } finally {
         setLoading(false);
       }

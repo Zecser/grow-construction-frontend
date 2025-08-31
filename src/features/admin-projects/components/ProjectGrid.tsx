@@ -3,7 +3,7 @@ import { type Project } from "../../../data/project";
 
 interface Props {
   projects: Project[];
-  category?: string; // 👈 add category
+  category?: string; //  add category
 }
 
 const ProjectGrid = ({ projects, category }: Props) => (

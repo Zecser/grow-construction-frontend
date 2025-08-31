@@ -9,18 +9,18 @@ export default function App() {
     const [projects, setProjects] = useState<{
         upcoming: string[];
         completed: string[];
-        recent: string[];
+        ongoing: string[];
     }>({
         upcoming: [],
         completed: [],
-        recent: [],
+        ongoing: [],
     });
 
     const [loading, setLoading] = useState(false);
 
     const handleShowMore = (title: string) => {
-        if (title === "RECENT PROJECTS") {
-            navigate("/admin/projects/recent");
+        if (title === "ONGOING PROJECTS") {
+            navigate("/admin/projects/ongoing");
         } else if (title === "UPCOMING PROJECTS") {
             navigate("/admin/projects/upcoming");
         } else if (title === "COMPLETED PROJECTS") {
@@ -36,7 +36,8 @@ export default function App() {
 
                 setProjects(response.data);
             } catch (error) {
-                setProjects({ upcoming: [], completed: [], recent: [] });
+                console.error("Error fetching projects:", error);
+                setProjects({ upcoming: [], completed: [], ongoing: [] });
             } finally {
                 setLoading(false);
             }
@@ -47,8 +48,8 @@ export default function App() {
 
     const projectCards = [
         {
-            title: "RECENT PROJECTS",
-            items: projects.recent,
+            title: "ONGOING PROJECTS",
+            items: projects.ongoing,
             color: "bg-grayLight",
             footer: true,
         },

@@ -11,6 +11,10 @@ interface ProjectForm {
     statusPercentage?: number;
     location: string;
     addProjectTo: string;
+    clientName: string;
+    clientId: string;
+    deadline: string;
+    budget?: number;
 }
 
 export const useEditProject = (id: string) => {
@@ -22,6 +26,10 @@ export const useEditProject = (id: string) => {
         statusPercentage: 0,
         location: "",
         addProjectTo: "",
+        clientName: "",
+        clientId: "",
+        deadline: "",
+        budget: 0,
     });
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -42,11 +50,15 @@ export const useEditProject = (id: string) => {
                     statusPercentage: project.status_percentage,
                     location: project.location,
                     addProjectTo:
-                        project.status === "recent"
-                            ? "Recent Projects"
+                        project.status === "ongoing"
+                            ? "Ongoing Projects"
                             : project.status === "upcoming"
                                 ? "Upcoming Projects"
                                 : "Completed Projects",
+                    clientName: project.Client_name,
+                    clientId: project.Client_id,
+                    deadline: project.deadline,
+                    budget: project.budget,
                 });
             } catch (error) {
                 toast.error("Failed to fetch project details.");
@@ -64,19 +76,34 @@ export const useEditProject = (id: string) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
-
+    const mapAddProjectToStatus = (addProjectTo: string) => {
+        switch (addProjectTo) {
+            case "Ongoing Projects":
+                return "ongoing";
+            case "Upcoming Projects":
+                return "upcoming";
+            case "Completed Projects":
+                return "completed";
+            default:
+                return "recent";
+        }
+    };
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         try {
+            const status = mapAddProjectToStatus(formData.addProjectTo);
             const payload = {
                 title: formData.name,
                 description: formData.description,
                 location: formData.location,
-                status: formData.status.toLowerCase(),
+                status: status.toLowerCase(),
                 status_percentage: formData.statusPercentage || 0,
                 start_date: formData.date,
-                budget: "1324355.00",
+                client_name: formData.clientName,
+                client_id: formData.clientId,
+                deadline: formData.deadline,
+                budget: formData.budget,
             };
 
             await api.put(
