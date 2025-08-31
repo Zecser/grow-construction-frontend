@@ -64,13 +64,14 @@ export const useAddProject = (initialState: ProjectForm) => {
                 status: status.toLowerCase(),
                 status_percentage: formData.statusPercentage || 0,
                 start_date: formData.date,
-                client_name: formData.clientName,
-                client_id: formData.clientId,
+                Client_name: formData.clientName,
+                Client_id: formData.clientId,
                 deadline: formData.deadline,
                 budget: formData.budget,
             };
 
             await api.post("/projects/", payload);
+
             toast.success("Project Saved Successfully!");
             setTimeout(() => {
                 navigate("/admin/projects", { replace: true });

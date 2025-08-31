@@ -100,8 +100,8 @@ export const useEditProject = (id: string) => {
                 status: status.toLowerCase(),
                 status_percentage: formData.statusPercentage || 0,
                 start_date: formData.date,
-                client_name: formData.clientName,
-                client_id: formData.clientId,
+                Client_name: formData.clientName,
+                Client_id: formData.clientId,
                 deadline: formData.deadline,
                 budget: formData.budget,
             };

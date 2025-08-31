@@ -42,7 +42,7 @@ const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
     return (
         <div className="px-0 sm:px-0 lg:px-0 xl:px-0 md:pl-0 lg:pl-0 xl:pl-2 py-2 pr-3 lg:mr-0 xl:mr-0 ">
             {/* Back Button */}
-            <Link to="/admin/projects" replace>
+            <Link to={mode === "create" ? "/admin/projects" : `/admin/project/${id}`} replace>
                 <div className="flex items-center gap-2 mb-6">
                     <svg
                         width="12"
@@ -232,7 +232,6 @@ const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
                     ) : mode === "create" ? "Save" : "Update"}
                 </button>
             </form>
-
         </div>
     );
 };
