@@ -33,8 +33,7 @@ export default function ProjectDetailPage() {
       try {
         const res = await api.get(`/projects/${projectId}/`);
         setProject(res.data);
-      } catch (err) {
-        console.error("Error fetching project", err);
+      } catch  {
       } finally {
         setLoading(false);
       }

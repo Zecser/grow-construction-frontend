@@ -24,7 +24,6 @@ const WhatWeOffer: React.FC<Props> = ({ serviceId }) => {
           setOffers(data.offers);
         }
       } catch (err) {
-        console.error(err);
       }
     };
 

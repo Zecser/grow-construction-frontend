@@ -18,7 +18,6 @@ export const useAdmin = () => {
         const checkAuth = async () => {
             dispatch(setLoading(true));
             try {
-                console.log("checking admin..")
                 const res = await api.get("/me/", { withCredentials: true });
 
                 const data: AdminType = res.data;

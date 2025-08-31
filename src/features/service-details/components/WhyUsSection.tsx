@@ -24,8 +24,7 @@ const WhyUsSection: React.FC<Props> = ({ serviceId }) => {
         const data = await res.json();
         setWhyUsList(Array.isArray(data.why_us_list) ? data.why_us_list : []);
         setBanner(data.service_banner || null);
-      } catch (err) {
-        console.error("Why Us fetch error:", err);
+      } catch  {
       } finally {
         setLoading(false);
       }

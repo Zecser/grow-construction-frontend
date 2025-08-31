@@ -71,7 +71,6 @@ export const useAddProject = (initialState: ProjectForm) => {
             }, 1500);
 
         } catch (error: any) {
-            console.error("API Error:", error.response?.data || error.message);
             toast.error(JSON.stringify(error.response?.data) || "Failed to save project!");
         } finally {
             setLoading(false);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import toast from "react-hot-toast";
+import {toast} from "react-hot-toast";
 import api from "../../../lib/api"; 
 
 export interface ProfileData {
@@ -89,7 +89,7 @@ export const useProfile = () => {
     else if (!/^\d{10}$/.test(profile.phone)) newErrors.phone = "Must be 10 digits";
 
     if (!profile.postal_code) newErrors.postal_code = "Required";
-    else if (!/^\d{1,6}$/.test(profile.postal_code)) newErrors.postal_code = "Up to 6 digits";
+    else if (!/^\d{6}$/.test(profile.postal_code)) newErrors.postal_code = "must be 6 digits";
 
     if (!profile.tax_id) newErrors.tax_id = "Required";
     else if (!/^[a-zA-Z0-9-]{10}$/.test(profile.tax_id)) newErrors.tax_id = "Must be 10 chars";
@@ -126,7 +126,7 @@ export const useProfile = () => {
 
     
     if ([...formData.keys()].length === 0) {
-      toast("No changes to save.");
+      toast.success("No changes to save.");
       navigate("/admin/profile");
       return;
     }
@@ -140,7 +140,6 @@ export const useProfile = () => {
     toast.success("Changes Saved!");
     navigate("/admin/profile");
   } catch (err) {
-    //console.error("failed to update", err);
     toast.error("Failed to save profile.");
   } finally {
     setLoading(false);

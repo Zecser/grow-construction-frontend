@@ -43,7 +43,6 @@ export const useFetchProfile = () => {
         });
       
       } catch (err) {
-        //console.error("failed to fetch",err);
         toast.error("Failed to fetch profile");
       } finally {
         setLoading(false);

@@ -12,7 +12,6 @@ export const useDeletePhoto = () => {
       await api.delete(`/gallery/${id}/`); 
       return { success: true };
     } catch (err: any) {
-      console.error("Failed to delete photo:", err);
       if (err instanceof Error) {
         setError(err.message);
       } else {

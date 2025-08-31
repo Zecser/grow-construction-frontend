@@ -35,9 +35,7 @@ export default function App() {
                 const response = await api.get("/projects/titles-by-status/");
 
                 setProjects(response.data);
-                console.log("Projects by status:", response.data);
             } catch (error) {
-                console.error("Error fetching projects:", error);
                 setProjects({ upcoming: [], completed: [], recent: [] });
             } finally {
                 setLoading(false);

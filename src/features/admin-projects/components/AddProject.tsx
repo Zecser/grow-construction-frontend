@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAddProject } from "../hooks/useAddProject";
 import { useEditProject } from "../hooks/useEditProject";
@@ -29,11 +29,7 @@ const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
                 addProjectTo: "",
             });
 
-    useEffect(() => {
-        if (mode === "edit") {
-            console.log("Editing project ID:", id);
-        }
-    }, [mode, id]);
+
 
     return (
         <div className="px-0 sm:px-0 lg:px-0 xl:px-0 md:pl-0 lg:pl-0 xl:pl-2 py-2 pr-3 lg:mr-0 xl:mr-0 ">
