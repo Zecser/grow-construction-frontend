@@ -17,7 +17,7 @@ const ProjectListPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [searchQuery, setSearchQuery] = useState(""); 
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -27,9 +27,7 @@ const ProjectListPage = () => {
 
         let url = "";
         if (category) {
-          url = `/projects/${encodeURIComponent(
-            category
-          )}/?page=${page}&limit=${PAGE_LIMIT}`;
+          url = `/projects/?status=${category?.toLowerCase()}&page=${page}&limit=${PAGE_LIMIT}`;
         } else {
           url = `/projects/?page=${page}&limit=${PAGE_LIMIT}`;
         }
@@ -72,7 +70,6 @@ const ProjectListPage = () => {
     ? category.charAt(0).toUpperCase() + category.slice(1) + " Projects"
     : "Projects";
 
-
   if (error) return <p className="p-4 text-red-500">{error}</p>;
 
   return (
@@ -94,11 +91,11 @@ const ProjectListPage = () => {
           ))}
         </div>
       )}
-      
-      {!loading && <ProjectGrid projects={projects} category={category} />}
+
+      {!loading &&(projects?.length > 0 ?  <ProjectGrid projects={projects} category={category} /> : <p className="opacity-75 text-center mt-10">No results found</p>)}
 
       {/* Pagination */}
-      <div className="flex justify-center items-center gap-4 mt-6">
+      {projects?.length > 0 && <div className="flex justify-center items-center gap-4 mt-6">
         <button
           onClick={() => setPage((p) => Math.max(p - 1, 1))}
           disabled={page === 1}
@@ -116,7 +113,7 @@ const ProjectListPage = () => {
         >
           Next
         </button>
-      </div>
+      </div>}
     </div>
   );
 };
