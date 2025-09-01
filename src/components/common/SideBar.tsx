@@ -1,14 +1,15 @@
 import { Link, useLocation } from "react-router-dom";
 import { ADMIN_NAV_LINKS } from "./constants";
-import { APP_NAME } from "../../utils/constants";
+import { APP_NAME, LOGO } from "../../utils/constants";
 
 const AdminSidebar = () => {
   const { pathname } = useLocation();
 
   return (
     <aside className="h-screen md:w-48 bg-primary text-white flex flex-col py-6 sticky top-0">
-      <div className="mb-10 px-6 hidden md:block">
-        <h1 className="text-lg">{APP_NAME}</h1>
+      <div className="mb-10 px-6 hidden md:flex items-center gap-2">
+        <img src={LOGO} alt={APP_NAME} className="h-8 w-8 object-cover"/>
+        <h1 className="text-sm">{APP_NAME}</h1>
       </div>
 
       <nav className="flex flex-col gap-4">
