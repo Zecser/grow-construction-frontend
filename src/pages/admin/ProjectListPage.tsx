@@ -57,7 +57,7 @@ const ProjectListPage = () => {
           date: p?.start_date ?? null,
         }));
         setProjects(mapped);
-        setTotalPages(Math.max(1, Math.ceil(mapped.length / PAGE_LIMIT)));
+        setTotalPages(Math.max(1, Math.ceil(res.data?.count / PAGE_LIMIT)));
       } catch (err) {
         setError("Failed to load projects");
       } finally {
