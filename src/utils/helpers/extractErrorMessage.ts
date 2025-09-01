@@ -3,7 +3,6 @@ import { AxiosError } from "axios";
 export function extractErrorMessages(error: unknown): string {
     const messages: string[] = [];
     const visited = new Set<any>();
-
     const stack: any[] = [];
 
     const axiosError = error as AxiosError<any>;
@@ -22,6 +21,9 @@ export function extractErrorMessages(error: unknown): string {
         visited.add(current);
 
         if (typeof current === "string") {
+            if (/<(html|head|body|!DOCTYPE)/i.test(current)) {
+                return "Server not responding";
+            }
             messages.push(current);
         } else if (Array.isArray(current)) {
             stack.push(...current);

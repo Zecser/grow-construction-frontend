@@ -42,7 +42,7 @@ const ProjectListPage = () => {
 
         // Map with safe defaults
         const mapped = results.map((p: any) => ({
-          id: p?.Client_id ?? "",
+          id: p?.id,
           projectName: p?.title ?? "",
           location: p?.location ?? "",
           status: p?.status ?? "",

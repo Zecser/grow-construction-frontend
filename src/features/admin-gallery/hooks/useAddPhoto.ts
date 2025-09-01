@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import api from "../../../lib/api";
+import { extractErrorMessages } from "@/utils/helpers/extractErrorMessage";
 
 export const useAddPhoto = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -41,11 +42,7 @@ export const useAddPhoto = () => {
 
       return true;
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      }else {
-        setError("Failed to add photo. Please try again.");
-      }
+      setError(extractErrorMessages(err) || "Failed to add photo. Please try again.");
       return false;
     } finally {
       setLoading(false);
