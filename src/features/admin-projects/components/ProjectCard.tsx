@@ -17,7 +17,7 @@ const ProjectCard = ({ project,category }: Props) => (
   <div className="bg-white border border-gray-200 rounded-lg shadow-md p-5 w-full max-w-full min-h-[240px] flex flex-col justify-between lg:max-w-[420px]">
     <div className="w-full flex-grow mx-auto text-left">
       <div className="flex mb-2 text-sm sm:text-base">
-        <span className="text-teal-700 w-32 flex-shrink-0">Client ID</span>
+        <span className="text-teal-700 w-32 flex-shrink-0">Project ID</span>
         <span className="text-teal-700 flex-grow">: #{project.id}</span>
       </div>
       <div className="flex mb-2 text-sm sm:text-base">
