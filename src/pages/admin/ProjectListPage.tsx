@@ -17,7 +17,7 @@ const ProjectListPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [searchQuery, setSearchQuery] = useState(""); //  search state
+  const [searchQuery, setSearchQuery] = useState(""); 
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -27,9 +27,15 @@ const ProjectListPage = () => {
 
         let url = "";
         if (category) {
-          url = `/projects/${encodeURIComponent(category)}/?page=${page}&limit=${PAGE_LIMIT}`;
+          url = `/projects/${encodeURIComponent(
+            category
+          )}/?page=${page}&limit=${PAGE_LIMIT}`;
         } else {
           url = `/projects/?page=${page}&limit=${PAGE_LIMIT}`;
+        }
+
+        if (searchQuery.trim()) {
+          url += `&search=${encodeURIComponent(searchQuery.trim())}`;
         }
 
         if (!url) return;
@@ -38,7 +44,9 @@ const ProjectListPage = () => {
 
         // Safely get results array
         const results: any[] =
-          res && res.data && Array.isArray(res.data.results) ? res.data.results : [];
+          res && res.data && Array.isArray(res.data.results)
+            ? res.data.results
+            : [];
 
         // Map with safe defaults
         const mapped = results.map((p: any) => ({
@@ -48,46 +56,9 @@ const ProjectListPage = () => {
           status: p?.status ?? "",
           date: p?.start_date ?? null,
         }));
-
-        // --- Ensure we only keep projects that belong to the current category (if status exists) ---
-        let categoryScoped = mapped;
-        if (category) {
-          const catLower = category.toLowerCase();
-          // Check if status field exists on any item
-          const hasStatusField = mapped.some((m) => (m.status ?? "").toString().trim() !== "");
-          if (hasStatusField) {
-            categoryScoped = mapped.filter((m) =>
-              (m.status ?? "").toString().toLowerCase().includes(catLower)
-            );
-          } // else: fallback to mapped (server likely returned already scoped list)
-        }
-
-        // --- Apply free-text search (only within the categoryScoped set) ---
-        let finalProjects = categoryScoped;
-        if (searchQuery && searchQuery.trim() !== "") {
-          const q = searchQuery.trim().toLowerCase();
-          finalProjects = categoryScoped.filter((p) => {
-            const name = String(p.projectName || "").toLowerCase();
-            const loc = String(p.location || "").toLowerCase();
-            const status = String(p.status || "").toLowerCase();
-            return name.includes(q) || loc.includes(q) || status.includes(q);
-          });
-        }
-
-        setProjects(finalProjects);
-
-        // Total pages: if there's no client-side filtering (i.e., empty searchQuery) prefer backend count
-        const backendCount =
-          res && res.data && typeof res.data.count === "number" ? res.data.count : undefined;
-
-        if (!searchQuery || searchQuery.trim() === "") {
-          setTotalPages(Math.max(1, Math.ceil((backendCount ?? finalProjects.length) / PAGE_LIMIT)));
-        } else {
-          // We filtered client-side; compute pages from filtered results
-          setTotalPages(Math.max(1, Math.ceil(finalProjects.length / PAGE_LIMIT)));
-        }
+        setProjects(mapped);
+        setTotalPages(Math.max(1, Math.ceil(mapped.length / PAGE_LIMIT)));
       } catch (err) {
-        console.error("Project fetch error:", err);
         setError("Failed to load projects");
       } finally {
         setLoading(false);
@@ -101,18 +72,6 @@ const ProjectListPage = () => {
     ? category.charAt(0).toUpperCase() + category.slice(1) + " Projects"
     : "Projects";
 
-  if (loading) {
-    return (
-      <div className="p-5 bg-white rounded-xl m-4 border-t-[5px] border-teal-900">
-        <ProjectListHeader title={pageTitle} />
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <SkeletonCard key={i} />
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   if (error) return <p className="p-4 text-red-500">{error}</p>;
 
@@ -124,11 +83,19 @@ const ProjectListPage = () => {
       <SearchBar
         onSearch={(query) => {
           setSearchQuery(query);
-          setPage(1); // reset page when searching
+          setPage(1);
         }}
       />
 
-      <ProjectGrid projects={projects} category={category} />
+      {loading && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+      )}
+      
+      {!loading && <ProjectGrid projects={projects} category={category} />}
 
       {/* Pagination */}
       <div className="flex justify-center items-center gap-4 mt-6">

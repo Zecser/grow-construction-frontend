@@ -70,7 +70,6 @@ export default function ProjectDetailPage() {
         const res = await api.get(`/projects/${projectId}/`);
         setProject(res.data);
       } catch (err) {
-        console.error("Error fetching project", err);
       } finally {
         setLoading(false);
       }
@@ -87,7 +86,6 @@ export default function ProjectDetailPage() {
       await api.delete(`/projects/${projectId}/`);
       navigate(category ? `/admin/projects/${category}` : "/admin/projects");
     } catch (err) {
-      console.error("Error deleting project", err);
       setDeleteError("Failed to delete project. Please try again.");
     } finally {
       setDeleting(false);
@@ -111,7 +109,7 @@ export default function ProjectDetailPage() {
           <span className="text-[#54A18A]">Back To Projects</span>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-2">
+        <div className="hidden sm:flex flex-col sm:flex-row gap-2">
           {/* Edit Button */}
           <button
             onClick={() =>
@@ -138,7 +136,7 @@ export default function ProjectDetailPage() {
 
       <h1 className="text-lg sm:text-xl font-bold mt-4">{project.title}</h1>
 
-      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 ">
         <div>
           <strong>Location:</strong> {project.location}
         </div>
@@ -167,7 +165,29 @@ export default function ProjectDetailPage() {
           <strong>Completion:</strong> {project.status_percentage}%
         </div>
       </div>
+      <div className="flex sm:hidden flex-col gap-2 mt-4">
+        {/* Edit Button */}
+        <button
+          onClick={() =>
+            navigate(`/admin/projects/edit/${project.id}`, {
+              state: { category },
+            })
+          }
+          className="flex items-center justify-center gap-2 bg-[#54A18A] text-white px-3 py-2 rounded-lg hover:bg-[#3d7c6a] w-full sm:w-auto"
+        >
+          <Pencil size={18} />
+          Edit
+        </button>
 
+        {/* Delete Button */}
+        <button
+          onClick={() => setDeleteOpen(true)}
+          className="flex items-center justify-center gap-2 bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 w-full sm:w-auto"
+        >
+          <Trash2 size={18} />
+          Delete
+        </button>
+      </div>
       {/* Delete Confirm Modal */}
       <DeleteConfirmModal
         isOpen={deleteOpen}
