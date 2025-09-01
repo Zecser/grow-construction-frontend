@@ -36,7 +36,7 @@ export default function App() {
 
                 setProjects(response.data);
             } catch (error) {
-                console.error("Error fetching projects:", error);
+
                 setProjects({ upcoming: [], completed: [], ongoing: [] });
             } finally {
                 setLoading(false);

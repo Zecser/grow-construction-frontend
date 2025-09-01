@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAddProject } from "../hooks/useAddProject";
 import { useEditProject } from "../hooks/useEditProject";
@@ -33,14 +33,10 @@ const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
                 budget: 0,
             });
 
-    useEffect(() => {
-        if (mode === "edit") {
-            console.log("Editing project ID:", id);
-        }
-    }, [mode, id]);
+
 
     return (
-        <div className="px-0 sm:px-0 lg:px-0 xl:px-0 md:pl-0 lg:pl-0 xl:pl-2 py-2 pr-3 lg:mr-0 xl:mr-0 ">
+        <div className="px-4 sm:px-0 lg:px-0 xl:px-0 md:pl-0 lg:pl-0 xl:pl-2 py-2 pr-3 lg:mr-0 xl:mr-0 ">
             {/* Back Button */}
             <Link to={mode === "create" ? "/admin/projects" : `/admin/project/${id}`} replace>
                 <div className="flex items-center gap-2 mb-6">
@@ -57,7 +53,7 @@ const AddProject: React.FC<AddProjectProps> = ({ mode }) => {
                             fill="var(--color-primary)"
                         />
                     </svg>
-                    <h1 className="font-semibold text-sm sm:text-base md:text-lg lg:text-xl text-primary uppercase">
+                    <h1 className="font-semibold  text-lg md:text-xl text-primary uppercase">
                         {mode === "create" ? "Add Project" : "Edit Project"}
                     </h1>
                 </div>

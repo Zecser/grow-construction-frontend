@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import { Pencil, Trash2 } from "lucide-react"; // ✅ added Trash2
 import api from "@/lib/api";
+import toast from "react-hot-toast";
+import { extractErrorMessages } from "@/utils/helpers/extractErrorMessage";
 
 interface Project {
   id: number;
@@ -68,7 +70,7 @@ export default function ProjectDetailPage() {
         const res = await api.get(`/projects/${projectId}/`);
         setProject(res.data);
       } catch (err) {
-        console.error("Error fetching project", err);
+        toast.error(extractErrorMessages(err) || "Error fetching project");
       } finally {
         setLoading(false);
       }
@@ -88,8 +90,7 @@ export default function ProjectDetailPage() {
       await api.delete(`/projects/${projectId}/`); // ✅ delete request
       navigate(category ? `/admin/projects/${category}` : "/admin/projects"); // ✅ go back after delete
     } catch (err) {
-      console.error("Error deleting project", err);
-      alert("Failed to delete project");
+      toast.error(extractErrorMessages(err) ||"Failed to delete project");
     }
   };
 
@@ -99,39 +100,15 @@ export default function ProjectDetailPage() {
   return (
     <div className="p-6">
       {/* Back + Edit + Delete Buttons */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center text-lg">
+      <div className="flex sm:items-center justify-between flex-col sm:flex-row mb-4">
+        <div className="flex items-center text-lg ">
           <Link
             to={category ? `/admin/projects/${category}` : "/admin/projects"}
-            className="text-[#54A18A] mr-2 no-underline"
+            className="text-[#54A18A] mr-2 no-underline flex items-center gap-2"
           >
-            ←
+            <span>←</span>
+            <span className="text-[#54A18A]">Back To Projects</span>
           </Link>
-          <span className="text-[#54A18A]">Back To Projects</span>
-        </div>
-
-        <div className="flex gap-2">
-          {/* Edit Button */}
-          <button
-            onClick={() =>
-              navigate(`/admin/projects/edit/${project.id}`, {
-                state: { category },
-              })
-            }
-            className="flex items-center gap-2 bg-[#54A18A] text-white px-3 py-2 rounded-lg hover:bg-[#3d7c6a]"
-          >
-            <Pencil size={18} />
-            Edit
-          </button>
-
-          {/* Delete Button */}
-          <button
-            onClick={handleDelete}
-            className="flex items-center gap-2 bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700"
-          >
-            <Trash2 size={18} />
-            Delete
-          </button>
         </div>
       </div>
 
@@ -169,6 +146,29 @@ export default function ProjectDetailPage() {
           <p>{project.details}</p>
         </div>
       )}
+      <div className="flex gap-2 justify-end py-2 sm:py-0 mt-3">
+        {/* Edit Button */}
+        <button
+          onClick={() =>
+            navigate(`/admin/projects/edit/${project.id}`, {
+              state: { category },
+            })
+          }
+          className="flex items-center gap-2 bg-[#54A18A] text-white px-3 py-2 rounded hover:bg-[#3d7c6a]"
+        >
+          <Pencil size={18} />
+          Edit
+        </button>
+
+        {/* Delete Button */}
+        <button
+          onClick={handleDelete}
+          className="flex items-center gap-2 bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700"
+        >
+          <Trash2 size={18} />
+          Delete
+        </button>
+      </div>
     </div>
   );
 }

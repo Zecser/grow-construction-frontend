@@ -78,7 +78,6 @@ export const useAddProject = (initialState: ProjectForm) => {
             }, 1500);
 
         } catch (error: any) {
-            console.error("API Error:", error.response?.data || error.message);
             const errorMessage =
                 error.response?.data?.message ||
                 error.response?.data?.detail ||

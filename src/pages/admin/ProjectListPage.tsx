@@ -23,6 +23,7 @@ const ProjectListPage = () => {
         setLoading(true);
 
         let url = "";
+        
         if (searchQuery) {
           //  use global search API
           url = `/projects/?search=${searchQuery}&page=${page}&limit=12`;
@@ -43,11 +44,9 @@ const ProjectListPage = () => {
           status: p.status,
           date: p.start_date,
         }));
-
         setProjects(mapped);
-        setTotalPages(res.data.totalPages || 1);
+        setTotalPages(Math.ceil(res.data.count / 12) || 1);
       } catch (err) {
-        console.log(err);
         setError("Failed to load projects");
       } finally {
         setLoading(false);
@@ -77,7 +76,7 @@ const ProjectListPage = () => {
   if (error) return <p className="p-4 text-red-500">{error}</p>;
 
   return (
-    <div className="p-5 bg-white rounded-xl m-4 border-t-[5px] border-teal-900">
+    <div className="py-5 sm:p-5 bg-white rounded-xl m-4 border-t-[5px] border-teal-900">
       <ProjectListHeader title={pageTitle} />
 
       {/* Pass onSearch to SearchBar */}
@@ -97,7 +96,7 @@ const ProjectListPage = () => {
           disabled={page === 1}
           className="px-4 py-2 rounded bg-teal-700 text-white disabled:opacity-50"
         >
-          Previous
+          Prev
         </button>
         <span className="text-teal-700 font-medium">
           Page {page} of {totalPages}

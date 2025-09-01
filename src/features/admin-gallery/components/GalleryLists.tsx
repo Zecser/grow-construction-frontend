@@ -39,7 +39,7 @@ const GalleryLists = () => {
     <>
       <GalleryHeading mode="list" />
 
-      <div className="p-4 md:p-8 max-w-6xl mx-auto flex flex-col gap-6">
+      <div className="p-2 sm:p-4 md:p-8 max-w-6xl mx-auto flex flex-col gap-6">
         <div className="flex w-full justify-end md:justify-start">
           <button
             onClick={() => setAddingGallery(true)}

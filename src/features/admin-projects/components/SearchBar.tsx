@@ -36,11 +36,11 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
         placeholder="Search projects..."
         value={localValue}
         onChange={(e) => setLocalValue(e.target.value)}
-        className="flex-1 pl-10 pr-24 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-gray-400"
+        className="flex-1 pl-10 md:pr-24 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-gray-400"
       />
       <button
         type="submit"
-        className="absolute right-2 px-4 py-1.5 bg-teal-700 text-white text-sm rounded-lg hover:bg-teal-800"
+        className="absolute right-0 px-4 py-1.5 bg-teal-700 text-white text-sm rounded-lg hover:bg-teal-800"
       >
         Search
       </button>

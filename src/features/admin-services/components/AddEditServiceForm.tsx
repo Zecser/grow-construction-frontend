@@ -6,7 +6,6 @@ import ServiceHeading from "./ServiceHeading";
 import { useServiceForm } from "../hooks/useAddEditService";
 import type { ServicePayload } from "../hooks/useAddEditService";
 import { serviceFormSchema } from "../utils/serviceFormvalidation";
-import { ArrowLeft } from "lucide-react";
 import { useRef } from "react";
 
 interface AddEditServiceFormProps {
@@ -143,16 +142,10 @@ const AddEditServiceForm: React.FC<AddEditServiceFormProps> = ({ initialService,
   return (
     <>
       <div ref={errorRef}>
-        <ServiceHeading mode={initialService ? "edit" : "add"} />
-        {onCancel && (
-          <div className="flex items-center mt-10 ml-10 cursor-pointer" onClick={onCancel}>
-            <ArrowLeft className="w-5 h-5 text-primary mr-2" />
-            <span className="text-sm font-medium text-primary">Back</span>
-          </div>
-        )}
+        <ServiceHeading mode={initialService ? "edit" : "add"} onCancel={onCancel} />
 
         <form
-          className="p-4 md:p-8 lg:p-10 xl:p-12 flex flex-col gap-6"
+          className="px-2 p-4 md:p-8 lg:p-10 xl:p-12 flex flex-col gap-6"
           onSubmit={(e) => e.preventDefault()}
         >
 

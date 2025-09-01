@@ -3,8 +3,8 @@ const Header = () => {
 
   const navigate = useNavigate();
   return (
-    <section className="mb-[0px]">
-      <h2 className="font-semibold  text-base sm:text-lg md:text-xl lg:text-2xl  text-primary ml-0 sm:ml-0 lg:ml-0 md:ml-0">Projects</h2>
+    <section className="mb-[0px] pl-4 sm:pl-0 md:pl-2">
+      <h2 className="font-semibold  text-xl md:text-2xl  text-primary ml-0 sm:ml-0 lg:ml-0 md:ml-0">Projects</h2>
       <div className="flex items-center justify-end gap-3 md:gap-[30px] sm:gap-[0px]">
         <div className="flex items-center gap-[15px] " onClick={() => navigate("/admin/profile")}>
           <svg className="hidden md:block" width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
