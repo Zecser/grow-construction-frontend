@@ -18,6 +18,7 @@ import {
 } from "recharts";
 import { useEffect, useState } from "react";
 import { colorsHex, colorsRow } from "../constants/constants";
+import { Button } from "@/components/ui/button";
 
 const useIsMobile = () => {
   const [m, setM] = useState<boolean>(() =>
@@ -42,13 +43,12 @@ const useIsMobile = () => {
 const truncate = (s: string, max = 18) =>
   s && s.length > max ? `${s.slice(0, max - 1)}…` : s;
 
-
 const MobileEndValueLabel = (props: any) => {
   const { x = 0, y = 0, width = 0, height = 0, value } = props;
   const v = Math.max(0, Math.min(100, Number(value) || 0));
   const isInside = v >= 90;
-  const padInside = 4; 
-  const padOutside = 6; 
+  const padInside = 4;
+  const padOutside = 6;
 
   const tx = isInside ? x + width - padInside : x + width + padOutside;
   const ty = y + height / 2;
@@ -69,7 +69,8 @@ const MobileEndValueLabel = (props: any) => {
 };
 
 const ProjectStatusList = () => {
-  const { data, loading, error, refetch } = useOngoingProjects();
+  const { data, loading, error, refetch, ref, hasNext, seeMore } =
+    useOngoingProjects();
   const isMobile = useIsMobile();
 
   const chartHeight = Math.max(
@@ -96,7 +97,64 @@ const ProjectStatusList = () => {
           </div>
         ) : null}
 
-        {loading ? (
+        {data?.length &&
+          (isMobile ? (
+            <div
+              className="w-full overflow-x-hidden"
+              style={{ height: chartHeight }}
+            >
+              <div className="w-[calc(100%+24px)] -ml-3">
+                <ResponsiveContainer width="100%" height={chartHeight}>
+                  <BarChart
+                    layout="vertical"
+                    data={data}
+                    margin={{ top: 8, right: 28, left: 0, bottom: 8 }}
+                    barCategoryGap={20}
+                  >
+                    <CartesianGrid
+                      horizontal
+                      vertical={false}
+                      stroke="#f1f5f9"
+                    />
+                    <YAxis
+                      type="category"
+                      dataKey="label"
+                      width={100}
+                      tick={{ fontSize: 11 }}
+                      interval={0}
+                      tickLine={false}
+                      tickFormatter={(v: any) => truncate(String(v), 18)}
+                    />
+                    <XAxis type="number" domain={[0, 100]} hide />
+                    <Bar dataKey="value" radius={[0, 6, 6, 0]} barSize={16}>
+                      {data.map((_, i) => (
+                        <Cell key={i} fill={colorsHex[i % colorsHex.length]} />
+                      ))}
+                      <LabelList
+                        dataKey="value"
+                        content={<MobileEndValueLabel />}
+                      />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3 md:space-y-4">
+              {data.map((item, idx) => (
+                <ProjectStatusBar
+                  key={`${item.label}-${idx}`}
+                  label={item.label}
+                  percentage={item.value}
+                  colorClass={colorsRow[idx % colorsRow.length]}
+                  labelClassName="w-full sm:w-[200px] md:w-[260px] lg:w-[340px]"
+                  showValue
+                />
+              ))}
+            </div>
+          ))}
+
+        {loading && (
           <div className="space-y-3">
             {[...Array(6)].map((_, i) => (
               <div
@@ -105,60 +163,22 @@ const ProjectStatusList = () => {
               />
             ))}
           </div>
-        ) : !data.length ? (
+        )}
+
+        {!loading && !data.length && (
           <div className="text-sm text-gray-500 py-6 text-center">
             No ongoing projects to show.
           </div>
-        ) : isMobile ? (
-          <div
-            className="w-full overflow-x-hidden"
-            style={{ height: chartHeight }}
+        )}
+        <div ref={ref} />
+        {!loading && hasNext && (
+          <Button
+            onClick={seeMore}
+            className="mx-auto w-full mt-5"
+            variant="outline"
           >
-            <div className="w-[calc(100%+24px)] -ml-3">
-              <ResponsiveContainer width="100%" height={chartHeight}>
-                <BarChart
-                  layout="vertical"
-                  data={data}
-                  margin={{ top: 8, right: 28, left: 0, bottom: 8 }}
-                  barCategoryGap={20}
-                >
-                  <CartesianGrid horizontal vertical={false} stroke="#f1f5f9" />
-                  <YAxis
-                    type="category"
-                    dataKey="label"
-                    width={100}
-                    tick={{ fontSize: 11 }}
-                    interval={0}
-                    tickLine={false}
-                    tickFormatter={(v: any) => truncate(String(v), 18)}
-                  />
-                  <XAxis type="number" domain={[0, 100]} hide />
-                  <Bar dataKey="value" radius={[0, 6, 6, 0]} barSize={16}>
-                    {data.map((_, i) => (
-                      <Cell key={i} fill={colorsHex[i % colorsHex.length]} />
-                    ))}
-                    <LabelList
-                      dataKey="value"
-                      content={<MobileEndValueLabel />}
-                    />
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-3 md:space-y-4">
-            {data.map((item, idx) => (
-              <ProjectStatusBar
-                key={`${item.label}-${idx}`}
-                label={item.label}
-                percentage={item.value}
-                colorClass={colorsRow[idx % colorsRow.length]}
-                labelClassName="w-full sm:w-[200px] md:w-[260px] lg:w-[340px]"
-                showValue
-              />
-            ))}
-          </div>
+            See More...
+          </Button>
         )}
       </CardContent>
     </Card>
