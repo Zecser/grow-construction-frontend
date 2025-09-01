@@ -111,10 +111,7 @@ export const useEditProject = (id: string) => {
                 payload
             );
             toast.success("Project Updated Successfully!");
-
-            setTimeout(() => {
-                navigate(`/admin/project/${id}`, { replace: true });
-            }, 1500);
+            navigate(`/admin/project/${id}`, { replace: true });
 
         } catch (error: any) {
             toast.error("Failed to update project.");

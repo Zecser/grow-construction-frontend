@@ -34,7 +34,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
         >
           <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
           <p className="text-gray-600 mb-4">
-            Are you sure you want to delete this image?
+            Are you sure you want to delete this?
           </p>
 
           {errorMessage && (
