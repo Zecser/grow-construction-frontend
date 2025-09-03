@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "@/lib/api";
+import { extractErrorMessages } from "@/utils/helpers/extractErrorMessage";
 
 interface ProjectForm {
     name: string;
@@ -61,7 +62,7 @@ export const useEditProject = (id: string) => {
                     budget: project.budget,
                 });
             } catch (error) {
-                toast.error("Failed to fetch project details.");
+                toast.error(extractErrorMessages(error) || "Failed to fetch project details.");
             } finally {
                 setLoading(false);
             }
@@ -114,7 +115,7 @@ export const useEditProject = (id: string) => {
             navigate(`/admin/project/${id}`, { replace: true });
 
         } catch (error: any) {
-            toast.error("Failed to update project.");
+            toast.error(extractErrorMessages(error)||"Failed to update project.");
         } finally {
             setLoading(false);
         }

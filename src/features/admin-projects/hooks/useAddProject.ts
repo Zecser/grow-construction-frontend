@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { projectSchema } from "../validation/validationZod";
 import api from "../../../lib/api";
+import { extractErrorMessages } from "@/utils/helpers/extractErrorMessage";
 
 interface ProjectForm {
     name: string;
@@ -77,13 +78,9 @@ export const useAddProject = (initialState: ProjectForm) => {
 
 
         } catch (error: any) {
-            const errorMessage =
-                error.response?.data?.message ||
-                error.response?.data?.detail ||
-                error.response?.data?.error ||
-                "Failed to save project!";
 
-            toast.error(errorMessage);
+
+            toast.error(extractErrorMessages(error));
         } finally {
             setLoading(false);
         }
