@@ -48,19 +48,19 @@ const Gallery = ({ fetchDatas, fetchNext, hasNext, isLoading }: GalleryProps) =>
   ];
 
   return (
-    <div className="max-w-7xl mx-auto p-4 space-y-6">
+    <div className="max-w-7xl mx-auto p-4 space-y-6 overflow-hidden">
       {/* Desktop layout */}
       <div className="hidden md:block space-y-6">
         {groupedImages.map((group, i) => {
           const [left, top, bottom, right] = group;
           return (
             <div key={i} className="flex gap-4 h-[500px] lg:h-[600px] xl:h-[800px]">
-              {left && <img src={left} alt={`gallery-${i}-left`} className="w-1/3 h-full object-cover rounded-lg transition-transform duration-300 hover:scale-105" onError={(e) => e.currentTarget.src = noImg} />}
+              {left && <img src={left} alt={`gallery-${i}-left`} className="w-1/3 h-full object-cover rounded-lg transition-transform duration-300 hover:scale-[102%]" onError={(e) => e.currentTarget.src = noImg} />}
               <div className="flex flex-col w-1/3 gap-2 h-full">
-                {top && <img src={top} alt={`gallery-${i}-top`} className="flex-1 object-cover rounded-lg transition-transform duration-300 hover:scale-105" onError={(e) => e.currentTarget.src = noImg} />}
-                {bottom && <img src={bottom} alt={`gallery-${i}-bottom`} className="flex-1 object-cover rounded-lg transition-transform duration-300 hover:scale-105" onError={(e) => e.currentTarget.src = noImg} />}
+                {top && <img src={top} alt={`gallery-${i}-top`} className="flex-1 object-cover rounded-lg transition-transform duration-300 hover:scale-[102%]" onError={(e) => e.currentTarget.src = noImg} />}
+                {bottom && <img src={bottom} alt={`gallery-${i}-bottom`} className="flex-1 object-cover rounded-lg transition-transform duration-300 hover:scale-[102%]" onError={(e) => e.currentTarget.src = noImg} />}
               </div>
-              {right && <img src={right} alt={`gallery-${i}-right`} className="w-1/3 h-full object-cover rounded-lg transition-transform duration-300 hover:scale-105" onError={(e) => e.currentTarget.src = noImg} />}
+              {right && <img src={right} alt={`gallery-${i}-right`} className="w-1/3 h-full object-cover rounded-lg transition-transform duration-300 hover:scale-[102%]" onError={(e) => e.currentTarget.src = noImg} />}
             </div>
           );
         })}
@@ -77,12 +77,12 @@ const Gallery = ({ fetchDatas, fetchNext, hasNext, isLoading }: GalleryProps) =>
             <div key={i} className="flex gap-4">
               <div className="flex flex-col w-1/2 gap-2">
                 {col1Images.map(idx => (
-                  <img key={idx} src={photos[idx] || noImg} alt={`gallery-m-${idx}`} className="w-full h-full object-cover rounded-lg transition-transform duration-300 hover:scale-105" onError={(e) => e.currentTarget.src = noImg} />
+                  <img key={idx} src={photos[idx] || noImg} alt={`gallery-m-${idx}`} className="w-full h-full object-cover rounded-lg transition-transform duration-300 hover:scale-[102%]" onError={(e) => e.currentTarget.src = noImg} />
                 ))}
               </div>
               <div className="flex flex-col w-1/2 gap-2">
                 {col2Images.map(idx => (
-                  <img key={idx} src={photos[idx] || noImg} alt={`gallery-m-${idx}`} className="w-full h-full object-cover rounded-lg transition-transform duration-300 hover:scale-105" onError={(e) => e.currentTarget.src = noImg} />
+                  <img key={idx} src={photos[idx] || noImg} alt={`gallery-m-${idx}`} className="w-full h-full object-cover rounded-lg transition-transform duration-300 hover:scale-[102%]" onError={(e) => e.currentTarget.src = noImg} />
                 ))}
               </div>
             </div>
