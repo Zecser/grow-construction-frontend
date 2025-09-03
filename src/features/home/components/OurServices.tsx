@@ -42,7 +42,7 @@ const OurServices: React.FC<ServicesProps> = ({ fetchServices = [] }) => {
 
       {fetchServices?.length > 6 && (
         <div className="text-right my-2">
-          <Link to={"/services"} className=" text-lg text-green-600">
+          <Link to={"/services"} className="text-sm md:text-base text-green-600">
             show more...
           </Link>
         </div>
